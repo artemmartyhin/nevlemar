@@ -1,0 +1,17 @@
+/* src/components/Header/Header.module.css */
+.header {
+    background-color: #333;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .header a {
+    color: white;
+    padding: 0 1rem;
+    text-decoration: none;
+  }
+  
+  .header a:hover {
+    text-decoration: underline;
+  }
+  
