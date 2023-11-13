@@ -8,16 +8,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
+const mongoose_1 = require("@nestjs/mongoose");
+const mongoose_config_1 = require("./config/mongoose.config");
+const dog_service_1 = require("./dogs/dog.service");
+const dog_controller_1 = require("./dogs/dog.controller");
+const dog_schema_1 = require("./dogs/dog.schema");
+const auth_module_1 = require("./auth/auth.module");
+const user_module_1 = require("./user/user.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        imports: [
+            mongoose_1.MongooseModule.forRootAsync({
+                useFactory: mongoose_config_1.mongooseConfig,
+            }),
+            mongoose_1.MongooseModule.forFeature([{ name: 'Dog', schema: dog_schema_1.DogSchema }]),
+            auth_module_1.AuthModule,
+            user_module_1.UserModule,
+        ],
+        controllers: [dog_controller_1.DogController],
+        providers: [dog_service_1.DogService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

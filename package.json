@@ -22,6 +22,12 @@
   "scripts": {
     "test": "npx lerna run test",
     "build": "npx lerna run build",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "docker:build": "docker-compose build --no-cache",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
   }
 }
