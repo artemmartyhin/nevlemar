@@ -6,11 +6,11 @@ import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
-  @UseGuards(AuthGuard('google')) // Replace 'google' with your actual passport strategy name if different
   @Get('profile')
   async getProfile(@Req() req) {
-    return req.user;
+    return req.session.user; // Return user data from session
   }
+
 }

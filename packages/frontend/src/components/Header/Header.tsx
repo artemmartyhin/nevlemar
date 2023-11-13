@@ -1,50 +1,42 @@
-import React, { useEffect, useCallback } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import { useAuth } from "../../contexts/AuthContext";
 
-const Header: React.FC = () => {
-  const { user, login, logout } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
+const Header = () => {
+  const { user, login } = useAuth(); // Assuming useAuth provides user state and a method to update it
 
-  const fetchUserData = useCallback(async () => {
+  const fetchUserData = async () => {
     try {
-      const response = await fetch("http://localhost:3001/user/profile", {
-        credentials: "include",
+      const response = await fetch('http://localhost:3001/user/profile', {
+        credentials: 'include',
       });
+  
       if (response.ok) {
-        const userData = await response.json();
-        login(userData);
+        if (response.headers.get('Content-Type')?.includes('application/json')) {
+          const userData = await response.json();
+          login(userData);
+        } else {
+          return;
+        }
       } else if (response.status === 401) {
-        // User is not authenticated, you can redirect or show a login button
+        return;
       } else {
-        console.error("Failed to fetch user data", response.statusText);
+        console.error('Failed to fetch user data:', response.status, response.statusText);
       }
     } catch (error) {
-      console.error("Failed to fetch user data", error);
+      console.error('Error fetching user data', error);
     }
-  }, [login]);
-
+  };
+  
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const userData = queryParams.get('user');
-    if (userData) {
-      try {
-        const parsedUserData = JSON.parse(userData);
-        login(parsedUserData);
-        // Remove the 'user' query parameter from the URL
-        navigate(location.pathname, { replace: true });
-      } catch (error) {
-        console.error('Failed to parse user data', error);
-      }
-    } else {
-      fetchUserData();
+    if (!user) {
+      fetchUserData(); // Fetch user data on component mount if not logged in
     }
-  }, [fetchUserData, location.search, login, navigate, location.pathname]);
+  }, [user]);
 
   const handleLogin = () => {
-    window.location.href = "http://localhost:3001/auth/google";
+    window.location.href = "http://localhost:3001/auth/google"; // Redirect to Google Auth
   };
 
 

@@ -11,10 +11,11 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  @Redirect('http://localhost:3000/', 302)  // Redirect to your frontend application
+  @Redirect('http://localhost:3000/', 302)
   googleAuthRedirect(@Req() req) {
-    // handles the Google OAuth2 callback
-    const user = req.user
-    return {url: `http://localhost:3000/?user=${JSON.stringify(user)}`};  // You might want to handle user data in a different way
+    const user = req.user;
+    req.session.user = user; // Store user data in session
+    return {url: `http://localhost:3000/`};
   }
+  
 }
