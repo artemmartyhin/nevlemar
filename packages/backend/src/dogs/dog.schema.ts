@@ -5,4 +5,5 @@ export const DogSchema = new mongoose.Schema({
   age: Number,
   breed: String,
   gender: String,
+  image: String,
 });

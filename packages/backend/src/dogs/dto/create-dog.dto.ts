@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsString, IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateDogDto {
@@ -5,6 +6,7 @@ export class CreateDogDto {
   @IsNotEmpty()
   readonly name: string;
 
+  @Transform(({ value }) => parseInt(value))
   @IsInt()
   readonly age: number;
 

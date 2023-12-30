@@ -4,6 +4,9 @@ import { Model } from 'mongoose';
 import { Dog } from './dog.model';
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class DogService {
@@ -31,8 +34,27 @@ export class DogService {
     }).exec();
   }
 
-  async create(createDogDto: CreateDogDto): Promise<Dog> {
+  async create(createDogDto: CreateDogDto, file: Express.Multer.File): Promise<Dog> {
     const newDog = new this.dogModel(createDogDto);
+  
+    if (file) {
+      const uploadsDir = path.join(__dirname, '..', 'uploads');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+  
+      const hash = crypto.createHash('sha256');
+      hash.update(`${Date.now()}-${Math.random()}`);
+      const hashedFilename = hash.digest('hex').substring(0, 16); 
+      const fileExtension = path.extname(file.originalname);
+      const uniqueFilename = `${hashedFilename}${fileExtension}`;
+
+      const filePath = path.join(uploadsDir, uniqueFilename);
+      fs.writeFileSync(filePath, file.buffer);
+
+      newDog.image = uniqueFilename;
+    }
+  
     return await newDog.save();
   }
 
@@ -50,6 +72,13 @@ export class DogService {
     const result = await this.dogModel.deleteOne({ _id: id }).exec();
     if (result.deletedCount === 0) {
       throw new NotFoundException('Dog not found');
+    }
+  }
+
+  async deleteSeveral(ids: string[]): Promise<void> {
+    const result = await this.dogModel.deleteMany({ _id: { $in: ids } }).exec();
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('Dogs not found');
     }
   }
 }

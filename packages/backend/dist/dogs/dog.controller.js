@@ -14,16 +14,18 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DogController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const dog_service_1 = require("./dog.service");
 const create_dog_dto_1 = require("./dto/create-dog.dto");
 const update_dog_dto_1 = require("./dto/update-dog.dto");
 const auth_admin_1 = require("../auth/auth.admin");
+const multer = require("multer");
 let DogController = class DogController {
     constructor(dogService) {
         this.dogService = dogService;
     }
-    async create(createDogDto) {
-        return await this.dogService.create(createDogDto);
+    async create(file, createDogDto) {
+        return await this.dogService.create(createDogDto, file);
     }
     async findOne(id) {
         return await this.dogService.findOne(id);
@@ -40,14 +42,19 @@ let DogController = class DogController {
     async delete(id) {
         await this.dogService.delete(id);
     }
+    async deleteSeveral(ids) {
+        await this.dogService.deleteSeveral(ids);
+    }
 };
 exports.DogController = DogController;
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseGuards)(auth_admin_1.AdminGuard),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('image', { storage: multer.memoryStorage() })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_dog_dto_1.CreateDogDto]),
+    __metadata("design:paramtypes", [Object, create_dog_dto_1.CreateDogDto]),
     __metadata("design:returntype", Promise)
 ], DogController.prototype, "create", null);
 __decorate([
@@ -88,6 +95,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], DogController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Delete)(),
+    (0, common_1.UseGuards)(auth_admin_1.AdminGuard),
+    __param(0, (0, common_1.Body)('ids')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], DogController.prototype, "deleteSeveral", null);
 exports.DogController = DogController = __decorate([
     (0, common_1.Controller)('dogs'),
     __metadata("design:paramtypes", [dog_service_1.DogService])

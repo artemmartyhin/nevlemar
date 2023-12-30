@@ -7,5 +7,6 @@ exports.DogSchema = new mongoose.Schema({
     age: Number,
     breed: String,
     gender: String,
+    image: String,
 });
 //# sourceMappingURL=dog.schema.js.map
