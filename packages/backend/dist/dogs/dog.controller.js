@@ -31,6 +31,9 @@ let DogController = class DogController {
     async findAll() {
         return await this.dogService.findAll();
     }
+    async findByGenderAndBreed(breed, gender) {
+        return await this.dogService.findByGenderAndBreed(gender, breed);
+    }
     async update(id, updateDogDto) {
         return await this.dogService.update(id, updateDogDto);
     }
@@ -60,6 +63,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], DogController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':breed/:gender'),
+    __param(0, (0, common_1.Param)('breed')),
+    __param(1, (0, common_1.Param)('gender')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], DogController.prototype, "findByGenderAndBreed", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, common_1.UseGuards)(auth_admin_1.AdminGuard),

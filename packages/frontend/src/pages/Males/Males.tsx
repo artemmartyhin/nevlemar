@@ -4,7 +4,6 @@ import styles from "./Males.module.css";
 
 import axios from "axios";
 
-const backendUrl = "http://localhost:3001";
 
 interface Dog {
   _id: string;
@@ -19,20 +18,15 @@ const Males: React.FC = () => {
   const [breed, setBreed] = useState("pom");
 
   useEffect(() => {
+    console.log("process.env.REACT_APP_BACKEND", process.env.REACT_APP_BACKEND);
     axios
-      .get(
-        `${backendUrl}/dogs/${breed}/m
-    `
-      )
+      .get(`${process.env.REACT_APP_BACKEND}/dogs/${breed}/m`)
       .then((response) => {
         setDogs(response.data);
       })
       .catch((error) => console.error("Error fetching dogs:", error));
   }, [breed]);
 
-  const handleBreedChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setBreed(event.target.value);
-  };
 
   return (
     <div className={styles.males}>
@@ -40,7 +34,7 @@ const Males: React.FC = () => {
       <p>Meet our lovely male dogs!</p>
       <div>
         Choose a breed:
-        <select value={breed} onChange={handleBreedChange}>
+        <select value={breed} onChange={(e) => setBreed(e.target.value)}>
           <option value="pom">Pomeranian pom</option>
           <option value="cvergsnaucer">Cvergsnaucer</option>
         </select>

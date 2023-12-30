@@ -7,6 +7,7 @@ export declare class DogService {
     constructor(dogModel: Model<Dog>);
     findAll(): Promise<Dog[]>;
     findOne(id: string): Promise<Dog>;
+    findByGenderAndBreed(gender: string, breed: string): Promise<Dog[]>;
     create(createDogDto: CreateDogDto): Promise<Dog>;
     update(id: string, updateDogDto: UpdateDogDto): Promise<Dog>;
     delete(id: string): Promise<void>;

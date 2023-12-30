@@ -4,7 +4,6 @@ import styles from "./Puppies.module.css";
 
 import axios from "axios";
 
-const backendUrl = "http://localhost:3001";
 
 interface Dog {
   _id: string;
@@ -21,8 +20,7 @@ const Puppies: React.FC = () => {
   useEffect(() => {
     axios
       .get(
-        `${backendUrl}/dogs/${breed}/p
-    `
+        `${process.env.REACT_APP_BACKEND}/dogs/${breed}/p`
       )
       .then((response) => {
         setDogs(response.data);
@@ -30,9 +28,6 @@ const Puppies: React.FC = () => {
       .catch((error) => console.error("Error fetching dogs:", error));
   }, [breed]);
 
-  const handleBreedChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setBreed(event.target.value);
-  };
 
   return (
     <div className={styles.puppies}>
@@ -40,7 +35,7 @@ const Puppies: React.FC = () => {
       <p>Meet our lovely puppy dogs!</p>
       <div>
         Choose a breed:
-        <select value={breed} onChange={handleBreedChange}>
+        <select value={breed} onChange={(e) => setBreed(e.target.value)}>
           <option value="pom">Pomeranian pom</option>
           <option value="cvergsnaucer">Cvergsnaucer</option>
         </select>
