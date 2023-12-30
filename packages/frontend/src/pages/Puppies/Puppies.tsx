@@ -1,33 +1,12 @@
 // src/pages/Puppies/Puppies.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./Puppies.module.css";
+import useFetchDogs from "../../hooks/use.fetchDogs";
 
-import axios from "axios";
-
-
-interface Dog {
-  _id: string;
-  name: string;
-  age: number;
-  breed: string;
-  gender: string;
-}
 
 const Puppies: React.FC = () => {
-  const [dogs, setDogs] = useState<Dog[]>([]);
   const [breed, setBreed] = useState("pom");
-
-  useEffect(() => {
-    axios
-      .get(
-        `${process.env.REACT_APP_BACKEND}/dogs/${breed}/p`
-      )
-      .then((response) => {
-        setDogs(response.data);
-      })
-      .catch((error) => console.error("Error fetching dogs:", error));
-  }, [breed]);
-
+  const dogs = useFetchDogs(breed, "p");
 
   return (
     <div className={styles.puppies}>
