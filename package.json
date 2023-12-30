@@ -25,7 +25,9 @@
     "prepare": "husky install",
     "docker:build": "docker-compose build --no-cache",
     "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down"
+    "docker:down": "docker-compose down",
+    "docker:up-front": "docker-compose up -d --no-deps --build frontend",
+    "docker:up-back": "docker-compose up -d --no-deps --build backend"
   },
   "dependencies": {
     "dotenv": "^16.3.1"

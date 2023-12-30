@@ -11,6 +11,7 @@ interface Dog {
 }
 const backendUrl = "http://localhost:3001"; 
 
+
 const AdminPanel: React.FC = () => {
   const { user } = useAuth();
   const [dogs, setDogs] = useState<Dog[]>([]);
@@ -31,7 +32,7 @@ const AdminPanel: React.FC = () => {
   }, []);
 
   const handleAddDog = () => {
-    axios.post(`${backendUrl}/dogs`, newDog)
+    axios.post(`${backendUrl}/dogs`, newDog, { withCredentials: true })
       .then((response) => {
         const addedDog = response.data as Dog;
         setDogs([...dogs, addedDog]);
@@ -40,7 +41,7 @@ const AdminPanel: React.FC = () => {
   };
 
   const handleDeleteDog = (id: any) => {
-    axios.delete(`${backendUrl}/dogs/${id}`)
+    axios.delete(`${backendUrl}/dogs/${id}`, { withCredentials: true })
       .then(() => {
         setDogs(dogs.filter((dog) => dog._id !== id));
       }).catch((error) => console.error("Error deleting dog:", error));
@@ -48,7 +49,7 @@ const AdminPanel: React.FC = () => {
 
   
   if (user?.role !== "admin") {
-    return <p>You are not authorized to view this page.</p>;
+    return <p>Sorry. You are not authorized to view this page.</p>;
   }
 
   return (
