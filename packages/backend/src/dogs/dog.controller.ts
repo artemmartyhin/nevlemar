@@ -43,5 +43,11 @@ export class DogController {
   async delete(@Param('id') id: string) {
     await this.dogService.delete(id);
   }
+
+  @Delete()
+  @UseGuards(AdminGuard)
+  async deleteSeveral(@Body('ids') ids: string[]) {
+    await this.dogService.deleteSeveral(ids);
+  }
 }
 

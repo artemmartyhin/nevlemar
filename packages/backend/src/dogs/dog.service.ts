@@ -52,4 +52,11 @@ export class DogService {
       throw new NotFoundException('Dog not found');
     }
   }
+
+  async deleteSeveral(ids: string[]): Promise<void> {
+    const result = await this.dogModel.deleteMany({ _id: { $in: ids } }).exec();
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('Dogs not found');
+    }
+  }
 }
