@@ -16,6 +16,8 @@ exports.DogService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
+const fs = require("fs");
+const path = require("path");
 let DogService = class DogService {
     constructor(dogModel) {
         this.dogModel = dogModel;
@@ -36,8 +38,13 @@ let DogService = class DogService {
             gender: gender
         }).exec();
     }
-    async create(createDogDto) {
+    async create(createDogDto, file) {
         const newDog = new this.dogModel(createDogDto);
+        if (file) {
+            const filePath = path.join(__dirname, '..', 'uploads', file.originalname);
+            fs.writeFileSync(filePath, file.buffer);
+            newDog.image = filePath;
+        }
         return await newDog.save();
     }
     async update(id, updateDogDto) {
@@ -53,6 +60,12 @@ let DogService = class DogService {
         const result = await this.dogModel.deleteOne({ _id: id }).exec();
         if (result.deletedCount === 0) {
             throw new common_1.NotFoundException('Dog not found');
+        }
+    }
+    async deleteSeveral(ids) {
+        const result = await this.dogModel.deleteMany({ _id: { $in: ids } }).exec();
+        if (result.deletedCount === 0) {
+            throw new common_1.NotFoundException('Dogs not found');
         }
     }
 };

@@ -7,6 +7,7 @@ export interface Dog {
     age: number;
     breed: string;
     gender: string;
+    image: File | null;
 }
 
 const useFetchDogs = (breed: string, gender: string): Dog[] => {

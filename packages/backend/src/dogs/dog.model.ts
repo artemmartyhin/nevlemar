@@ -5,4 +5,5 @@ export interface Dog extends mongoose.Document {
     age: number;
     breed: string;
     gender: string;
+    image: string;
   }

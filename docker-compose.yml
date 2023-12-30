@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+
   mongodb:
     image: mongo:latest
     environment:
@@ -22,6 +23,8 @@ services:
       - mongodb
     ports:
       - "3001:3001"
+    volumes:
+      - ./packages/backend/uploads:/usr/src/app/uploads
 
   frontend:
     build: ./packages/frontend
@@ -29,6 +32,6 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-
+      
 volumes:
   mongo-data:
