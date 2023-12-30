@@ -30,6 +30,12 @@ let DogService = class DogService {
         }
         return dog;
     }
+    async findByGenderAndBreed(gender, breed) {
+        return await this.dogModel.find({
+            breed: breed,
+            gender: gender
+        }).exec();
+    }
     async create(createDogDto) {
         const newDog = new this.dogModel(createDogDto);
         return await newDog.save();
