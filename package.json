@@ -24,7 +24,8 @@
     "build": "npx lerna run build",
     "prepare": "husky install",
     "docker:build": "docker-compose build --no-cache",
-    "docker:up": "docker-compose up -d",
+    "docker:up": "docker-compose up -d --build",
+    "docker:up-nodeps": "docker-compose up -d --build",
     "docker:down": "docker-compose down",
     "docker:up-front": "docker-compose up -d --no-deps --build frontend",
     "docker:up-back": "docker-compose up -d --no-deps --build backend"

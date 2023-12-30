@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const dog_service_1 = require("./dog.service");
 const create_dog_dto_1 = require("./dto/create-dog.dto");
 const update_dog_dto_1 = require("./dto/update-dog.dto");
+const auth_admin_1 = require("../auth/auth.admin");
 let DogController = class DogController {
     constructor(dogService) {
         this.dogService = dogService;
@@ -40,6 +41,7 @@ let DogController = class DogController {
 exports.DogController = DogController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(auth_admin_1.AdminGuard),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_dog_dto_1.CreateDogDto]),
@@ -60,6 +62,7 @@ __decorate([
 ], DogController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, common_1.UseGuards)(auth_admin_1.AdminGuard),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -68,6 +71,7 @@ __decorate([
 ], DogController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(auth_admin_1.AdminGuard),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

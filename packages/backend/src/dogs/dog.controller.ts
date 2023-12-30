@@ -27,6 +27,11 @@ export class DogController {
     return await this.dogService.findAll();
   }
 
+  @Get(':breed/:gender')
+  async findByGenderAndBreed(@Param('breed') breed: string, @Param('gender') gender) {
+    return await this.dogService.findByGenderAndBreed(gender, breed)
+  }
+
   @Patch(':id')
   @UseGuards(AdminGuard)
   async update(@Param('id') id: string, @Body() updateDogDto: UpdateDogDto) {
