@@ -6,6 +6,7 @@ export declare class DogController {
     constructor(dogService: DogService);
     create(createDogDto: CreateDogDto): Promise<import("./dog.model").Dog>;
     findOne(id: string): Promise<import("./dog.model").Dog>;
+    findAll(): Promise<import("./dog.model").Dog[]>;
     update(id: string, updateDogDto: UpdateDogDto): Promise<import("./dog.model").Dog>;
     delete(id: string): Promise<void>;
 }
