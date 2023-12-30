@@ -9,7 +9,7 @@ interface Dog {
   breed: string;
   gender: string;
 }
-const backendUrl = "http://localhost:3001"; 
+const backendUrl = "http://localhost:3001";
 
 const AdminPanel: React.FC = () => {
   const { user } = useAuth();
@@ -17,21 +17,22 @@ const AdminPanel: React.FC = () => {
   const [newDog, setNewDog] = useState({
     name: "",
     age: 0,
-    breed: "",
-    gender: "",
+    breed: "pom",
+    gender: "m",
   });
 
   useEffect(() => {
-    axios.get(`${backendUrl}/dogs`)
+    axios
+      .get(`${backendUrl}/dogs`)
       .then((response) => {
-        console.log("Fetched dogs:", response.data);
         setDogs(response.data);
       })
       .catch((error) => console.error("Error fetching dogs:", error));
   }, []);
 
   const handleAddDog = () => {
-    axios.post(`${backendUrl}/dogs`, newDog)
+    axios
+      .post(`${backendUrl}/dogs`, newDog, { withCredentials: true })
       .then((response) => {
         const addedDog = response.data as Dog;
         setDogs([...dogs, addedDog]);
@@ -40,15 +41,16 @@ const AdminPanel: React.FC = () => {
   };
 
   const handleDeleteDog = (id: any) => {
-    axios.delete(`${backendUrl}/dogs/${id}`)
+    axios
+      .delete(`${backendUrl}/dogs/${id}`, { withCredentials: true })
       .then(() => {
         setDogs(dogs.filter((dog) => dog._id !== id));
-      }).catch((error) => console.error("Error deleting dog:", error));
+      })
+      .catch((error) => console.error("Error deleting dog:", error));
   };
 
-  
   if (user?.role !== "admin") {
-    return <p>You are not authorized to view this page.</p>;
+    return <p>Sorry. You are not authorized to view this page.</p>;
   }
 
   return (
@@ -60,21 +62,28 @@ const AdminPanel: React.FC = () => {
           placeholder="Name"
           onChange={(e) => setNewDog({ ...newDog, name: e.target.value })}
         />
-        <input
-          type="text"
-          placeholder="Breed"
-          onChange={(e) => setNewDog({ ...newDog, breed: e.target.value })}
-        />
+
         <input
           type="number"
           placeholder="Age"
           onChange={(e) => setNewDog({ ...newDog, age: +e.target.value })}
         />
-        <input
-          type="text"
-          placeholder="Gender"
+
+        <select 
+          value={newDog.breed}
+          onChange={(e) => setNewDog({ ...newDog, breed: e.target.value.toLowerCase() })}
+        >
+          <option value="pom">Pomeranian pom</option>
+          <option value="cvergsnaucer">Cvergsnaucer</option>
+        </select>
+        <select
+          value={newDog.gender}
           onChange={(e) => setNewDog({ ...newDog, gender: e.target.value })}
-        />
+        >
+          <option value="f">Female</option>
+          <option value="m">Male</option>
+          <option value="p">Puppy</option>
+        </select>
         <button onClick={handleAddDog}>Add Dog</button>
       </div>
       <ul>

@@ -7,7 +7,7 @@ import { UpdateDogDto } from './dto/update-dog.dto';
 
 @Injectable()
 export class DogService {
-  constructor(@InjectModel('Dog') private readonly dogModel: Model<Dog>) {}
+  constructor(@InjectModel('Dog') private readonly dogModel: Model<Dog>) { }
 
   async findAll(): Promise<Dog[]> {
     return await this.dogModel.find().exec();
@@ -19,6 +19,16 @@ export class DogService {
       throw new NotFoundException('Dog not found');
     }
     return dog;
+  }
+
+  async findByGenderAndBreed(
+    gender: string,
+    breed: string,
+  ): Promise<Dog[]> {
+    return await this.dogModel.find({
+      breed: breed,
+      gender: gender
+    }).exec();
   }
 
   async create(createDogDto: CreateDogDto): Promise<Dog> {
