@@ -2,11 +2,14 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import { useAuth } from "../../contexts/AuthContext";
+import logo from "../../assets/images/logo.png";
+import eng from "../../assets/images/eng.png";
+import drop from "../../assets/images/drop.png";
 
 import axios from "axios";
 
 const Header = () => {
-  const { user, login } = useAuth(); // Assuming useAuth provides user state and a method to update it
+  const { user, login } = useAuth(); 
 
   const fetchUserData = async () => {
     try {
@@ -14,25 +17,11 @@ const Header = () => {
         withCredentials: true,
       });
 
-
-      if (response.status === 200) {
-        if (
-          response.headers["content-type"].includes("application/json")
-
-        ) {
+      if (response.status === 200 && response.headers["content-type"]) {
+        if (response.headers["content-type"].includes("application/json")) {
           const userData = response.data;
           login(userData);
-        } else {
-          return;
         }
-      } else if (response.status === 401) {
-        return;
-      } else {
-        console.error(
-          "Failed to fetch user data:",
-          response.status,
-          response.statusText
-        );
       }
     } catch (error) {
       console.error("Error fetching user data", error);
@@ -41,28 +30,74 @@ const Header = () => {
 
   useEffect(() => {
     if (!user) {
-      fetchUserData(); // Fetch user data on component mount if not logged in
+      fetchUserData();
     }
   }, [user]);
 
   const handleLogin = () => {
-    window.location.href = "http://localhost:3001/auth/google"; // Redirect to Google Auth
+    window.location.href = "http://localhost:3001/auth/google";
   };
 
   return (
-    <div className={styles.header}>
-      <Link to="/">Home</Link>
-      <Link to="/males">Males</Link>
-      <Link to="/females">Females</Link>
-      <Link to="/puppies">Puppies</Link>
-      {user ? (
-        <div>
-          <span>Welcome, {user.firstName}! </span>
+    <div className="justify-center items-center flex flex-col px-16 py-7 max-md:px-5">
+      <div className="flex items-center justify-between gap-5 max-md:max-w-full max-md:flex-wrap">
+        <div className="items-stretch flex justify-between gap-5 my-auto max-md:max-w-full max-md:flex-wrap">
+          <img
+            loading="lazy"
+            src={logo}
+            className="aspect-[2.88] object-contain object-center w-[115px] overflow-hidden shrink-0 max-w-full"
+          />
+          <div className="items-stretch self-center flex justify-between gap-5 my-auto">
+            <div className="text-sky-950 text-base font-bold leading-6">
+              <Link to="/">Home</Link>
+            </div>
+            <div className="text-sky-950 text-base font-bold leading-6">
+              <Link to="/males">Males</Link>
+            </div>
+            <div className="text-sky-950 text-base font-bold leading-6">
+              <Link to="/females">Females</Link>
+            </div>
+            <div className="text-sky-950 text-base font-bold leading-6">
+              <Link to="/puppies">Puppies</Link>
+            </div>
+            <div className="text-sky-950 text-base font-bold leading-6">
+              <Link to="/puppies">About us</Link>
+            </div>
+            {user?.role == "admin" ? (
+              <div className="text-sky-950 text-base font-bold leading-6">
+                <Link to="/admin">Admin</Link>
+              </div>
+            ) : null}
+          </div>
         </div>
-      ) : (
-        <button onClick={handleLogin}>Login with Google</button>
-      )}
-      {user?.role === "admin" && <Link to="/admin">Admin</Link>}
+        <div className="items-stretch self-stretch flex gap-3.5 max-md:max-w-full max-md:flex-wrap">
+          <div className="items-stretch bg-white flex justify-between gap-3 px-4 py-3 rounded-[46px] max-md:pr-5"></div>
+          <div className="text-white text-base font-bold leading-6 whitespace-nowrap justify-center items-stretch bg-sky-950 grow px-7 py-2.5 rounded-[57px] max-md:px-5">
+            {user ? (
+              <span>Welcome, {user.firstName}! </span>
+            ) : (
+              <button onClick={handleLogin}>Login with Google</button>
+            )}
+          </div>
+          <div className="justify-between flex gap-1 px-2 py-2.5 items-start">
+            <div className="flex gap-1.5 items-start">
+              <img
+                loading="lazy"
+                src={eng}
+                className="aspect-square object-contain object-center w-[21px] justify-center items-center overflow-hidden shrink-0 max-w-full"
+              />
+              <div className="text-sky-950 text-base font-medium leading-6 self-stretch">
+                ENG
+              </div>
+            </div>
+            <img
+              loading="lazy"
+              src={drop}
+              className="aspect-square object-contain object-center w-6 overflow-hidden self-stretch shrink-0 max-w-full"
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
