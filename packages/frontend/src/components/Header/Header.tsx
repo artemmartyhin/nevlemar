@@ -45,7 +45,7 @@ const Header = () => {
           <img
             loading="lazy"
             src={logo}
-            className="aspect-[2.88] object-contain object-center w-[115px] overflow-hidden shrink-0 max-w-full"
+            className="mb-2 aspect-[4] object-contain object-center w-[150px] overflow-hidden shrink-0 max-w-full"
           />
           <div className="items-stretch self-center flex justify-between gap-5 my-auto">
             <div className="text-sky-950 text-base font-bold leading-6">

@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateDogDto = void 0;
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class CreateDogDto {
 }
@@ -20,6 +21,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateDogDto.prototype, "name", void 0);
 __decorate([
+    (0, class_transformer_1.Transform)(({ value }) => parseInt(value)),
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], CreateDogDto.prototype, "age", void 0);
