@@ -28,7 +28,8 @@ const CustomButton = styled(Button)<CustomButtonProps>(
     ...theme.typography.button,
     backgroundColor: buttonType === "default" ? backgroundColor : "transparent",
     "&:hover": {
-      backgroundColor: buttonType === "hover" ? "#005f73" : "transparent",
+      backgroundColor: buttonType === "hover" ? "#005f73" : "#e6bc6e",
+      color: buttonType === "hover" ? "#005f73" : "#00172d",
     },
     "&.Mui-disabled": {
       backgroundColor: buttonType === "disabled" ? "#667479" : "transparent",

@@ -9,7 +9,7 @@ import main from "../../assets/images/main.png";
 const Home: React.FC = () => {
   return (
     <div className="flex flex-col justify-center items-center">
-      <div className="relative w-full h-[600px] bg-white rounded-[0px_0px_40px_40px] overflow-hidden [background:linear-gradient(180deg,rgb(251.81,238.23,212.99)_6.17%,rgb(251.81,238.23,212.99)_75.14%,rgb(255,230.83,185.94)_100%)]">
+      <div className="relative w-full h-[600px] bg-white rounded-[0px_0px_20px_20px] overflow-hidden [background:linear-gradient(180deg,rgb(251.81,238.23,212.99)_6.17%,rgb(251.81,238.23,212.99)_75.14%,rgb(255,230.83,185.94)_100%)]">
         <div className="left-[-91px] absolute w-[1531px] h-[1360px]">
           <div className="top-0 left-0 absolute w-[1531px] h-[1360px]">
             <div className="absolute w-[635px] h-[635px] top-[231px] left-[734px] bg-[#f7dba7] rounded-[99px] rotate-[9.35deg]" />
