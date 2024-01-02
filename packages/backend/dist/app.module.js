@@ -15,6 +15,8 @@ const dog_controller_1 = require("./dogs/dog.controller");
 const dog_schema_1 = require("./dogs/dog.schema");
 const auth_module_1 = require("./auth/auth.module");
 const user_module_1 = require("./user/user.module");
+const serve_static_1 = require("@nestjs/serve-static");
+const path_1 = require("path");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,6 +29,10 @@ exports.AppModule = AppModule = __decorate([
             mongoose_1.MongooseModule.forFeature([{ name: 'Dog', schema: dog_schema_1.DogSchema }]),
             auth_module_1.AuthModule,
             user_module_1.UserModule,
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(__dirname, 'uploads'),
+                serveRoot: '/uploads',
+            })
         ],
         controllers: [dog_controller_1.DogController],
         providers: [dog_service_1.DogService],

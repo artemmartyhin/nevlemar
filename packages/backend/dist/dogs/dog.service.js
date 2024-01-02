@@ -18,6 +18,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 let DogService = class DogService {
     constructor(dogModel) {
         this.dogModel = dogModel;
@@ -41,9 +42,18 @@ let DogService = class DogService {
     async create(createDogDto, file) {
         const newDog = new this.dogModel(createDogDto);
         if (file) {
-            const filePath = path.join(__dirname, '..', 'uploads', file.originalname);
+            const uploadsDir = path.join(__dirname, '..', 'uploads');
+            if (!fs.existsSync(uploadsDir)) {
+                fs.mkdirSync(uploadsDir, { recursive: true });
+            }
+            const hash = crypto.createHash('sha256');
+            hash.update(`${Date.now()}-${Math.random()}`);
+            const hashedFilename = hash.digest('hex').substring(0, 16);
+            const fileExtension = path.extname(file.originalname);
+            const uniqueFilename = `${hashedFilename}${fileExtension}`;
+            const filePath = path.join(uploadsDir, uniqueFilename);
             fs.writeFileSync(filePath, file.buffer);
-            newDog.image = filePath;
+            newDog.image = uniqueFilename;
         }
         return await newDog.save();
     }

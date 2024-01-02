@@ -9,7 +9,6 @@ import Males from './pages/Males/Males';
 import Females from './pages/Females/Females';
 import Puppies from './pages/Puppies/Puppies';
 import AdminPanel from './components/Admin/Admin';
-import './App.module.css';
 
 function App() {
   return (
