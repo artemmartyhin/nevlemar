@@ -40,32 +40,32 @@ const Header = () => {
   };
 
   return (
-    <div className="justify-center items-center flex flex-col px-16 py-7 max-md:px-5">
+    <div className="justify-center items-center flex flex-col px-16 py-2 max-md:px-5">
       <div className="flex items-center justify-between gap-5 max-md:max-w-full max-md:flex-wrap">
         <div className="items-stretch flex justify-between gap-5 my-auto max-md:max-w-full max-md:flex-wrap">
           <img
             loading="lazy"
             src={logo}
-            className="mb-2 aspect-[4] object-contain object-center w-[175px] overflow-hidden shrink-0 max-w-full"
+            className="mb-3 mr-10 aspect-[4] object-contain object-center w-[225px] overflow-hidden shrink-0 max-w-full"
           />
-          <div className="items-stretch self-center flex justify-between gap-5 my-auto">
-            <div className="text-sky-950 text-base font-bold leading-6">
+          <div className="items-stretch self-center flex justify-between gap-6 my-auto [font-family:'Rosario',sans-serif]">
+            <div className="text-sky-950 text-lg font-bold leading-10">
               <Link to="/">Home</Link>
             </div>
-            <div className="text-sky-950 text-base font-bold leading-6">
+            <div className="text-sky-950 text-lg font-bold leading-10">
               <Link to="/males">Males</Link>
             </div>
-            <div className="text-sky-950 text-base font-bold leading-6">
+            <div className="text-sky-950 text-lg font-bold leading-10">
               <Link to="/females">Females</Link>
             </div>
-            <div className="text-sky-950 text-base font-bold leading-6">
+            <div className="text-sky-950 text-lg font-bold leading-10">
               <Link to="/puppies">Puppies</Link>
             </div>
-            <div className="text-sky-950 text-base font-bold leading-6">
+            <div className="text-sky-950 text-lg font-bold leading-10">
               <Link to="/puppies">About us</Link>
             </div>
             {user?.role == "admin" ? (
-              <div className="text-sky-950 text-base font-bold leading-6">
+              <div className="text-sky-950 text-lg font-bold leading-10">
                 <Link to="/admin">Admin</Link>
               </div>
             ) : null}
@@ -80,9 +80,9 @@ const Header = () => {
               <img
                 loading="lazy"
                 src={eng}
-                className="aspect-square object-contain object-center w-[21px] justify-center items-center overflow-hidden shrink-0 max-w-full"
+                className="aspect-square mt-2 object-contain object-center w-[21px] justify-center items-center overflow-hidden shrink-0 max-w-full"
               />
-              <div className="text-sky-950 text-base font-medium leading-6 self-stretch">
+              <div className="text-sky-950 text-lg font-medium leading-10 self-stretch [font-family:'Rosario',sans-serif]">
                 ENG
               </div>
             </div>
@@ -95,7 +95,7 @@ const Header = () => {
         </div>
           <div className="flex gap-1.5 items-start">
               {user ? (
-                <div className="text-sky-950 text-base font-bold leading-6">
+                <div className="text-sky-950 text-lg font-bold leading-10 [font-family:'Rosario',sans-serif]">
                   <span>Welcome, {user.firstName}! </span>
                 </div>
               ) : (
@@ -106,6 +106,7 @@ const Header = () => {
                   text="Login"
                   buttonType="default"
                   onClick={handleLogin}
+                  backgroundColor="#00172d"
                 />
               )}
         </div>
