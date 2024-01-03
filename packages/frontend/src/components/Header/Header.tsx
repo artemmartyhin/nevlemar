@@ -53,10 +53,10 @@ const Header = () => {
               <Link to="/">Home</Link>
             </div>
             <div className="text-sky-950 text-lg font-bold leading-10">
-              <Link to="/males">Males</Link>
+              <Link to="/poms">Pomeranian</Link>
             </div>
             <div className="text-sky-950 text-lg font-bold leading-10">
-              <Link to="/females">Females</Link>
+              <Link to="/cvergs">Cvergsnaucer</Link>
             </div>
             <div className="text-sky-950 text-lg font-bold leading-10">
               <Link to="/puppies">Puppies</Link>
@@ -101,7 +101,7 @@ const Header = () => {
               ) : (
                 <ButtonL
                   iconLeft={false}
-                  iconOnly={false}
+                  iconOnly={true}
                   iconRight={false}
                   text="Login"
                   buttonType="default"

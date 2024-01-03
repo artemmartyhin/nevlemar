@@ -44,7 +44,7 @@ const Home: React.FC = () => {
                 iconLeft={false}
                 iconOnly={false}
                 iconRight={false}
-                text="Explore"
+                text="Get In Touch"
                 buttonType="default"
                 backgroundColor="#00172d"
               />

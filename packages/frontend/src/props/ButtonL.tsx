@@ -24,7 +24,8 @@ const CustomButton = styled(Button)<CustomButtonProps>(
     display: "inline-flex",
     gap: theme.spacing(iconOnly ? 1.5 : 2),
     padding: iconOnly ? theme.spacing(1.5) : theme.spacing(1.75, 3.5, 1.25),
-    width: iconOnly ? theme.spacing(6) : theme.spacing(25.25),
+    width: iconOnly ? theme.spacing(12) : theme.spacing(25.5),
+    height: iconOnly ? theme.spacing(4.5) : theme.spacing(6.25),
     ...theme.typography.button,
     backgroundColor: buttonType === "default" ? backgroundColor : "transparent",
     "&:hover": {
@@ -37,7 +38,11 @@ const CustomButton = styled(Button)<CustomButtonProps>(
     },
     border: buttonType === "outline" ? "1.5px solid #003459" : "none",
     borderColor: buttonType === "focus" ? "#005f73" : "transparent",
-    font: "normal normal bold 16px/24px Rosario",
+    //font: "normal normal bold 16px/24px Rosario",
+
+    font: iconOnly ? "normal normal bold 12px/18px Rosario" : "normal normal bold 16px/24px Rosario",
+
+
   })
 );
 
@@ -66,7 +71,7 @@ export const ButtonL: React.FC<CustomButtonProps> = ({
       onClick={onClick}
       {...props} // Spread the rest of the props to the Button component
     >
-      {!iconOnly ? props.text : null}
+      {props.text}
     </CustomButton>
   );
 };
