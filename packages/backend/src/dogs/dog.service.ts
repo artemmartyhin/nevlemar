@@ -34,18 +34,26 @@ export class DogService {
     }).exec();
   }
 
+  async findPuppiesByBreed(breed: string): Promise<Dog[]> {
+    console.log(breed);
+    return await this.dogModel.find({
+      breed: breed,
+      isPuppy: true
+    }).exec();
+  }
+
   async create(createDogDto: CreateDogDto, file: Express.Multer.File): Promise<Dog> {
     const newDog = new this.dogModel(createDogDto);
-  
+
     if (file) {
       const uploadsDir = path.join(__dirname, '..', 'uploads');
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
-  
+
       const hash = crypto.createHash('sha256');
       hash.update(`${Date.now()}-${Math.random()}`);
-      const hashedFilename = hash.digest('hex').substring(0, 16); 
+      const hashedFilename = hash.digest('hex').substring(0, 16);
       const fileExtension = path.extname(file.originalname);
       const uniqueFilename = `${hashedFilename}${fileExtension}`;
 
@@ -54,7 +62,7 @@ export class DogService {
 
       newDog.image = uniqueFilename;
     }
-  
+
     return await newDog.save();
   }
 

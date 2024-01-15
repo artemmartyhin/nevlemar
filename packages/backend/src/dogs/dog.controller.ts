@@ -31,9 +31,15 @@ export class DogController {
     return await this.dogService.findAll();
   }
 
-  @Get(':breed/:gender')
+  @Get('adults/:breed/:gender')
   async findByGenderAndBreed(@Param('breed') breed: string, @Param('gender') gender) {
     return await this.dogService.findByGenderAndBreed(gender, breed)
+  }
+
+  @Get('puppies/:breed')
+  async findPuppiesByBreed(@Param('breed') breed: string) {
+    console.log(breed);
+    return await this.dogService.findPuppiesByBreed(breed);
   }
 
   @Patch(':id')

@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { useFetchPuppies } from "../../hooks/use.fetchDogs";
-import { ProductCard } from "../../props/ProductCard";
+import useFetchDogs from "../../hooks/use.fetchDogs";
 import { ButtonL } from "../../props/ButtonL";
+import { ProductCard } from "../../props/ProductCard";
 
-const Puppies: React.FC = () => {
-  const [breed, setBreed] = useState("pom");
-  const dogs = useFetchPuppies(breed);
-
-  console.log(dogs);
+const Cvergshnauzer: React.FC = () => {
+  const [gender, setGender] = useState("m");
+  const dogs = useFetchDogs("cvergsnaucer", gender);
 
   return (
     <div>
@@ -17,7 +15,7 @@ const Puppies: React.FC = () => {
           <div className="absolute w-[978px] h-[300px] top-0 left-[200px]">
             <div className="z-10">
               <div className="text-3xl font-semibold text-[#f7dba7] mb-4 [font-family:'Rosario',sans-serif]">
-                Meet our puppies
+                Cvergshnauzer
               </div>
               <p className="text-lg text-[#f7dba7] mb-6 [font-family:'Rosario',sans-serif]">
                 Take a look at some of our pets
@@ -27,16 +25,16 @@ const Puppies: React.FC = () => {
                   htmlFor="breedSelect"
                   className="block text-lg font-medium text-[#f7dba7] mb-2 [font-family:'Rosario',sans-serif]"
                 >
-                  Breed:
+                  Gene:
                 </label>
                 <select
                   id="geneSelect"
-                  value={breed}
-                  onChange={(e) => setBreed(e.target.value)}
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
                   className="mt-1 block w-200 pl-3 pr-10 py-2 text-base [font-family:'Rosario',sans-serif] border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                 >
-                  <option value="pom">Pomeranian</option>
-                  <option value="cvergsnaucer">Cvergsnaucer</option>
+                  <option value="m">Male</option>
+                  <option value="f">Female</option>
                 </select>
               </div>
             </div>
@@ -69,4 +67,4 @@ const Puppies: React.FC = () => {
   );
 };
 
-export default Puppies;
+export default Cvergshnauzer;

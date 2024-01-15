@@ -25,7 +25,7 @@ export const Banner = () => {
         <div className="absolute w-[1067px] h-[1067px] top-[389px] left-0">
           <div className="w-[788px] h-[788px] top-[139px] left-[139px] bg-primary-colordark-blue-80 rotate-[28.25deg] absolute rounded-[99px]" />
           <img
-            className="absolute w-[440px] h-[230px] top-[7px] left-[400px] object-cover"
+            className="absolute w-[440px] h-[230px] top-[7px] left-[400px] object-cover shadow-2xl rounded-[5px] border-[1px] border-[#f7dba7]"
             alt="Horizontal shot"
             src={banner}
           />

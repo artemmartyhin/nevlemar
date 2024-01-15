@@ -2,8 +2,9 @@ import * as mongoose from 'mongoose';
 
 export interface Dog extends mongoose.Document {
     name: string;
-    age: number;
+    born: Date;
     breed: string;
     gender: string;
     image: string;
+    isPuppy: boolean;
   }
