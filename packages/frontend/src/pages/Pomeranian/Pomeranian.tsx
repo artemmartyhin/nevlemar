@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import useFetchDogs from "../../hooks/use.fetchDogs";
 import { ProductCard } from "../../props/ProductCard";
+import { ButtonL } from "../../props/ButtonL";
 
 const Pomeranian: React.FC = () => {
   const [gender, setGender] = useState("m");
@@ -47,10 +48,20 @@ const Pomeranian: React.FC = () => {
             image={`${process.env.REACT_APP_BACKEND}/uploads/${dog.image}`}
             name={dog.name}
             breed={dog.breed}
-            age={String(dog.age)}
+            age={String(dog.born)}
             gender={dog.gender}
           />
         ))}
+      </div>
+      <div className="flex justify-center mt-10">
+        <ButtonL
+          iconLeft={false}
+          iconOnly={false}
+          iconRight
+          text="View more"
+          buttonType="outline"
+          textColor="#00172d"
+        />
       </div>
     </div>
   );

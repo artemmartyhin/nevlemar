@@ -10,10 +10,11 @@ const AdminPanel: React.FC = () => {
   const [newDog, setNewDog] = useState<Dog>({
     _id: "",
     name: "",
-    age: 0,
+    born: new Date(),
     breed: "pom",
     gender: "m",
     image: null,
+    isPuppy: false,
   });
   const [selectedDogs, setSelectedDogs] = useState<string[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -47,22 +48,19 @@ const AdminPanel: React.FC = () => {
 
     const formData = new FormData();
     formData.append("name", newDog.name);
-    formData.append("age", String(newDog.age));
+    formData.append("born", newDog.born.toISOString());
     formData.append("breed", newDog.breed);
     formData.append("gender", newDog.gender);
+    formData.append("isPuppy", String(newDog.isPuppy));
 
     if (newDog.image) {
       formData.append("image", newDog.image, newDog.image.name);
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:3001/dogs",
-        formData,
-        {
-          withCredentials: true,
-        }
-      );
+      await axios.post("http://localhost:3001/dogs", formData, {
+        withCredentials: true,
+      });
 
       fetchDogs();
     } catch (error) {
@@ -119,6 +117,7 @@ const AdminPanel: React.FC = () => {
       .get(`${process.env.REACT_APP_BACKEND}/dogs`)
       .then((response) => {
         setDogs(response.data);
+        console.log(dogs);
       })
       .catch((error) => console.error("Error fetching dogs:", error));
   };
@@ -144,10 +143,12 @@ const AdminPanel: React.FC = () => {
             onChange={(e) => setNewDog({ ...newDog, name: e.target.value })}
           />
           <input
-            type="number"
-            placeholder="Age"
+            type="Date"
+            placeholder="born"
             className="p-2 border border-gray-300 rounded"
-            onChange={(e) => setNewDog({ ...newDog, age: +e.target.value })}
+            onChange={(e) =>
+              setNewDog({ ...newDog, born: new Date(e.target.value) })
+            }
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -168,8 +169,19 @@ const AdminPanel: React.FC = () => {
           >
             <option value="f">Female</option>
             <option value="m">Male</option>
-            <option value="p">Puppy</option>
           </select>
+
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              className="mr-2"
+              checked={newDog.isPuppy}
+              onChange={() =>
+                setNewDog({ ...newDog, isPuppy: !newDog.isPuppy })
+              }
+            />
+            Is Puppy
+          </label>
         </div>
         <input
           type="file"
@@ -203,7 +215,8 @@ const AdminPanel: React.FC = () => {
                   onChange={() => handleCheckboxChange(dog._id)}
                 />
                 <span className="flex-1">
-                  {dog.name} - {dog.breed} - {dog.age} - {dog.gender}
+                  {dog.name} - {dog.breed} - {String(dog.born)} - {dog.gender} -{" "}
+                  {String(dog.isPuppy)}
                 </span>
                 {dog.image && (
                   <img
