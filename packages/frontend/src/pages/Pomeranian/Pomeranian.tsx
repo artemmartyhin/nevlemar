@@ -9,16 +9,16 @@ const Pomeranian: React.FC = () => {
 
   return (
     <div>
-      <div className="w-full h-[250px] bg-[#00172d] rounded-[20px] overflow-hidden">
-        <div className="relative w-[1816px] h-[300px] top-[50px] left-[250px]">
-          <div className="w-[782px] h-[635px] top-[136px] left-[500px] [background:linear-gradient(180deg,rgb(251.81,238.23,212.99)_6.17%,rgb(251.81,238.23,212.99)_75.14%,rgb(255,230.83,185.94)_100%)] rotate-[25.23deg] absolute rounded-[99px]" />
-          <div className="absolute w-[978px] h-[300px] top-0 left-[200px]">
+       <div className="w-full h-[250px] bg-[#00172d] rounded-[20px] overflow-hidden">
+        <div className="relative w-[1816px] h-[150px] top-[40px] left-[250px]">
+          <div className="w-[782px] h-[635px] top-[10px] left-[500px] [background:linear-gradient(180deg,rgb(251.81,238.23,212.99)_6.17%,rgb(251.81,238.23,212.99)_75.14%,rgb(255,230.83,185.94)_100%)] rotate-[25.23deg] absolute rounded-[99px]" />
+          <div className="absolute w-[978px] h-[200px] top-0 left-[200px]">
             <div className="z-10">
               <div className="text-3xl font-semibold text-[#f7dba7] mb-4 [font-family:'Rosario',sans-serif]">
                 Pomeranian Spitz
               </div>
               <p className="text-lg text-[#f7dba7] mb-6 [font-family:'Rosario',sans-serif]">
-                Take a look at some of our pets
+                Take a look at some of our pomeranian spitzs
               </p>
               <div className="mb-8">
                 <label
