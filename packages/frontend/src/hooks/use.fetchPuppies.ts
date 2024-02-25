@@ -12,27 +12,22 @@ export interface Dog {
 
 interface DogOptions {
   breed: string;
-  gender: boolean;
 }
 
-
-const useFetchDogs = (breed: string, gender: boolean): Dog[] => {
-  const [dogs, setDogs] = useState([]);
+const useFetchPuppies = (breed: string): Dog[] => {
+  const [puppy, setPuppies] = useState([]);
 
   const data: DogOptions = {
-    breed,
-    gender,
+    breed
   };
 
   useEffect(() => {
     axios
-      .post(`${process.env.REACT_APP_BACKEND}/dogs/find`, data)
-      .then((response) => setDogs(response.data))
+      .post(`${process.env.REACT_APP_BACKEND}/puppies/find`, data)
+      .then((response) => setPuppies(response.data))
       .catch((error) => console.error("Error fetching dogs:", error));
-  }, [breed, gender]);
-  return dogs;
+  }, [breed]);
+  return puppy;
 };
 
-
-export default useFetchDogs;
-
+export default useFetchPuppies;

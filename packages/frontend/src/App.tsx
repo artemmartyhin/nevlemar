@@ -8,11 +8,11 @@ import Home from './pages/Home/Home';
 import Pomeranian from './pages/Pomeranian/Pomeranian';
 import Cvergsnaucer from './pages/Cvergsnaucer/Cvergsnaucer';
 import Puppies from './pages/Puppies/Puppies';
-import AdminPanel from './pages/Admin/Admin';
+import Admin from './pages/Admin/Admin';
 
 function App() {
   return (
-    <AuthProvider>  {/* Wrap your application with AuthProvider */}
+    <AuthProvider>
       <Router>
         <Header />
         <Routes>
@@ -20,7 +20,7 @@ function App() {
           <Route path="/poms" element={<Pomeranian />} />
           <Route path="/cvergs" element={<Cvergsnaucer />} />
           <Route path="/puppies" element={<Puppies />} />
-          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </Router>
     </AuthProvider>
