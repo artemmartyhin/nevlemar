@@ -17,6 +17,10 @@ export class Puppies extends mongoose.Document {
   @IsNotEmpty()
   father: mongoose.Types.ObjectId;
 
+  @Prop()
+  @IsNotEmpty()
+  breed: string;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Dog' })
   @IsNotEmpty()
   puppies: [mongoose.Types.ObjectId];

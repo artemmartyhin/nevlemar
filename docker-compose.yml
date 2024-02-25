@@ -24,8 +24,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./packages/backend/uploads:/usr/src/app/uploads
-
+      - image-data:/data/uploads
   frontend:
     build: ./packages/frontend
     ports:
@@ -35,3 +34,4 @@ services:
       
 volumes:
   mongo-data:
+  image-data:
