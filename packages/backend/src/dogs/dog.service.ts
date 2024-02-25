@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Dog } from './dog.shema';
+import { Dog } from './dog.schema';
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
 import { FindDogDto } from './dto/find-dog.dto';
@@ -17,8 +17,8 @@ export class DogService {
     return await this.dogModel.find().exec();
   }
 
-  async findByOptions(findDogDto: FindDogDto): Promise<Dog[]> {
-    return await this.dogModel.find(findDogDto).exec();
+  async findByOptions(dto: FindDogDto): Promise<Dog[]> {
+    return await this.dogModel.find(dto).exec();
   }
 
   async findOne(id: string): Promise<Dog> {
@@ -30,13 +30,13 @@ export class DogService {
   }
 
   async create(
-    createDogDto: CreateDogDto,
+    dto: CreateDogDto,
     file: Express.Multer.File,
   ): Promise<Dog> {
-    const newDog = new this.dogModel(createDogDto);
+    const newDog = new this.dogModel(dto);
 
     if (file) {
-      const uploadsDir = path.join(__dirname, '..', 'uploads');
+      const uploadsDir = '/data/uploads'
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
@@ -56,9 +56,9 @@ export class DogService {
     return await newDog.save();
   }
 
-  async update(id: string, updateDogDto: UpdateDogDto): Promise<Dog> {
+  async update(id: string, dto: UpdateDogDto): Promise<Dog> {
     const updatedDog = await this.dogModel
-      .findByIdAndUpdate(id, updateDogDto, { new: true })
+      .findByIdAndUpdate(id, dto, { new: true })
       .exec();
     if (!updatedDog) {
       throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);

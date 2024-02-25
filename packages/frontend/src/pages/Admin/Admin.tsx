@@ -210,7 +210,7 @@ const AdminPanel: React.FC = () => {
                   onChange={() => handleCheckboxChange(dog._id)}
                 />
                 <span className="flex-1">
-                  {dog.name} - {dog.breed} - {String(dog.born)} - {dog.gender} -{" "}
+                  {dog.name} - {dog.breed} - {String(dog.born)} - {String(dog.gender)} -{" "}
                 </span>
                 {!dog.images
                   ? null

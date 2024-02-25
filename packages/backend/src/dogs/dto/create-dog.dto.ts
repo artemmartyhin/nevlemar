@@ -17,7 +17,7 @@ export class CreateDogDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly gender: string;
+  readonly gender: boolean;
 
   @IsString()
   @IsOptional()

@@ -3,18 +3,16 @@ import {
   Post,
   UseGuards,
   Body,
-  Req,
   UseInterceptors,
   UploadedFile,
   Get,
   Param,
   Patch,
-  Delete,
+  Delete
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DogService } from './dog.service';
 import { FindDogDto } from './dto/find-dog.dto';
-
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
 import { AdminGuard } from 'src/auth/auth.admin';
@@ -30,8 +28,8 @@ export class DogController {
   @UseInterceptors(
     FileInterceptor('image', { storage: multer.memoryStorage() }),
   )
-  async create(@UploadedFile() file, @Body() createDogDto: CreateDogDto) {
-    return await this.dogService.create(createDogDto, file);
+  async create(@UploadedFile() file, @Body() dto: CreateDogDto) {
+    return await this.dogService.create(dto, file);
   }
 
   @Get(':id')
@@ -44,18 +42,15 @@ export class DogController {
     return await this.dogService.findAll();
   }
 
-  @Get('adults/:breed/:gender')
-  async findBy(@Param('breed') breed: string, @Param('gender') gender) {
-    const options = new FindDogDto();
-    options.breed = breed;
-    options.gender = gender;
-    return await this.dogService.findByOptions(options);
+  @Post('find')
+  async findBy(@Body() dto: FindDogDto) {
+    return await this.dogService.findByOptions(dto);
   }
 
   @Patch(':id')
   @UseGuards(AdminGuard)
-  async update(@Param('id') id: string, @Body() updateDogDto: UpdateDogDto) {
-    return await this.dogService.update(id, updateDogDto);
+  async update(@Param('id') id: string, @Body() dto: UpdateDogDto) {
+    return await this.dogService.update(id, dto);
   }
 
   @Delete(':id')
