@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { mongooseConfig } from './config/mongoose.config';
 import { DogService } from './dogs/dog.service';
 import { DogController } from './dogs/dog.controller';
-import { DogSchema } from './dogs/dog.schema';
+import { DogSchema } from './dogs/dog.shema';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';

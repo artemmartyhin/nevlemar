@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsString, IsInt, IsNotEmpty, IsDate } from 'class-validator';
+import { IsString, IsNotEmpty, IsDate, IsOptional } from 'class-validator';
 
 export class CreateDogDto {
   @IsString()
@@ -19,7 +19,7 @@ export class CreateDogDto {
   @IsNotEmpty()
   readonly gender: string;
 
-  @Transform(({ value }) => value === 'true')
-  @IsNotEmpty()
-  readonly isPuppy: boolean;
+  @IsString()
+  @IsOptional()
+  readonly parents: string[];
 }

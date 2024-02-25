@@ -12,9 +12,8 @@ const AdminPanel: React.FC = () => {
     name: "",
     born: new Date(),
     breed: "pom",
-    gender: "m",
-    image: null,
-    isPuppy: false,
+    gender: true,
+    images: [],
   });
   const [selectedDogs, setSelectedDogs] = useState<string[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -50,11 +49,13 @@ const AdminPanel: React.FC = () => {
     formData.append("name", newDog.name);
     formData.append("born", newDog.born.toISOString());
     formData.append("breed", newDog.breed);
-    formData.append("gender", newDog.gender);
-    formData.append("isPuppy", String(newDog.isPuppy));
+    formData.append("gender", String(newDog.gender));
 
-    if (newDog.image) {
-      formData.append("image", newDog.image, newDog.image.name);
+    if (!newDog.images) {
+      return;
+    }
+    if (newDog.images[0]) {
+      formData.append("image", newDog.images[0]);
     }
 
     try {
@@ -106,7 +107,8 @@ const AdminPanel: React.FC = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setNewDog({ ...newDog, image: file });
+      const images = newDog.images ? [...newDog.images, file] : [file];
+      setNewDog({ ...newDog, images });
       const filePreviewUrl = URL.createObjectURL(file);
       setPreviewUrl(filePreviewUrl);
     }
@@ -163,25 +165,18 @@ const AdminPanel: React.FC = () => {
             <option value="cvergsnaucer">Cvergsnaucer</option>
           </select>
           <select
-            value={newDog.gender}
+            value={String(newDog.gender)}
             className="p-2 border border-gray-300 rounded"
-            onChange={(e) => setNewDog({ ...newDog, gender: e.target.value })}
+            onChange={(e) =>
+              setNewDog({
+                ...newDog,
+                gender: Boolean(JSON.parse(e.target.value)),
+              })
+            }
           >
-            <option value="f">Female</option>
-            <option value="m">Male</option>
+            <option value="true">Male</option>
+            <option value="false">Female</option>
           </select>
-
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              className="mr-2"
-              checked={newDog.isPuppy}
-              onChange={() =>
-                setNewDog({ ...newDog, isPuppy: !newDog.isPuppy })
-              }
-            />
-            Is Puppy
-          </label>
         </div>
         <input
           type="file"
@@ -216,15 +211,16 @@ const AdminPanel: React.FC = () => {
                 />
                 <span className="flex-1">
                   {dog.name} - {dog.breed} - {String(dog.born)} - {dog.gender} -{" "}
-                  {String(dog.isPuppy)}
                 </span>
-                {dog.image && (
-                  <img
-                    src={`${process.env.REACT_APP_BACKEND}/uploads/${dog.image}`}
-                    alt={dog.name}
-                    className="w-24 h-24 object-cover rounded mr-2"
-                  />
-                )}
+                {!dog.images
+                  ? null
+                  : dog.images[0] && (
+                      <img
+                        src={`${process.env.REACT_APP_BACKEND}/uploads/${dog.images[0]}`}
+                        alt={dog.name}
+                        className="w-24 h-24 object-cover rounded mr-2"
+                      />
+                    )}
                 <button
                   onClick={() => handleDeleteDog(dog._id)}
                   className="px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600"

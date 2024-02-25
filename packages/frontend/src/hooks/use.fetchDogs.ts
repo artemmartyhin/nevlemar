@@ -6,12 +6,11 @@ export interface Dog {
     name: string;
     born: Date;
     breed: string;
-    gender: string;
-    image: File | null;
-    isPuppy: boolean;
+    gender: boolean;
+    images: File[] | null;
 }
 
-const useFetchDogs = (breed: string, gender: string): Dog[] => {
+const useFetchDogs = (breed: string, gender: boolean): Dog[] => {
     const [dogs, setDogs] = useState([]);
 
     useEffect(() => {
@@ -34,7 +33,6 @@ const useFetchPuppies = (breed: string): Dog[] => {
             .catch((error) => console.error("Error fetching puppies:", error));
     }, [breed]);
 
-    console.log("puppies", puppies);
     return puppies;
 }
 

@@ -5,7 +5,7 @@ import { ButtonL } from "../props/ButtonL";
 interface ProductCardProps {
   name: string;
   breed: string;
-  gender: string;
+  gender: boolean;
   age: string;
   className?: string;
   image?: string;
@@ -19,7 +19,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div
       className={`shadow-md rounded-lg bg-white relative m-2 ${className}`}
-      style={{ width: "264px" }} // Fixed width for the card
+      style={{ width: "264px" }}
     >
       <div className="w-full h-[300px] overflow-hidden rounded-t-lg bg-white">
         <img
