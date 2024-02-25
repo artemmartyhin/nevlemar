@@ -3,7 +3,6 @@ import React from 'react';
 import styles from './DogProfile.module.css';
 
 interface DogProfileProps {
-  // Add any props that you need for the dog profile here
   name: string;
   age: number;
   breed: string;

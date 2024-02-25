@@ -38,11 +38,8 @@ const CustomButton = styled(Button)<CustomButtonProps>(
     },
     border: buttonType === "outline" ? "1.5px solid #003459" : "none",
     borderColor: buttonType === "focus" ? "#005f73" : "transparent",
-    //font: "normal normal bold 16px/24px Rosario",
 
     font: iconOnly ? "normal normal bold 12px/18px Rosario" : "normal normal bold 16px/24px Rosario",
-
-
   })
 );
 

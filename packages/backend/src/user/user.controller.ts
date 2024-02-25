@@ -1,12 +1,10 @@
 // src/user/user.controller.ts
 
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { UserService } from './user.service';
+import { Controller, Get, Req } from '@nestjs/common';
+
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
 
   @Get('profile')
   async getProfile(@Req() req) {

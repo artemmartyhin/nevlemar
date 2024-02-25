@@ -7,8 +7,6 @@ const Puppies: React.FC = () => {
   const [breed, setBreed] = useState("pom");
   const dogs = useFetchPuppies(breed);
 
-  console.log(dogs);
-
   return (
     <div>
       <div className="w-full h-[250px] bg-[#00172d] rounded-[20px] overflow-hidden">
@@ -44,16 +42,20 @@ const Puppies: React.FC = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-        {dogs.map((dog) => (
-          <ProductCard
-            key={dog._id} // Ensure you have a unique key for each dog
-            image={`${process.env.REACT_APP_BACKEND}/uploads/${dog.image}`}
-            name={dog.name}
-            breed={dog.breed}
-            age={String(dog.born)}
-            gender={dog.gender}
-          />
-        ))}
+        {dogs.map((dog) =>
+          !dog.images ? (
+            "404"
+          ) : (
+            <ProductCard
+              key={dog._id}
+              image={`${process.env.REACT_APP_BACKEND}/uploads/${dog.images[0]}`}
+              name={dog.name}
+              breed={dog.breed}
+              age={String(dog.born)}
+              gender={dog.gender}
+            />
+          )
+        )}
       </div>
       <div className="flex justify-center mt-10">
         <ButtonL

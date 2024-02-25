@@ -1,48 +1,38 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Dog } from './dog.model';
+import { Dog } from './dog.shema';
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
+import { FindDogDto } from './dto/find-dog.dto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class DogService {
-  constructor(@InjectModel('Dog') private readonly dogModel: Model<Dog>) { }
+  constructor(@InjectModel('Dog') private readonly dogModel: Model<Dog>) {}
 
   async findAll(): Promise<Dog[]> {
     return await this.dogModel.find().exec();
   }
 
+  async findByOptions(findDogDto: FindDogDto): Promise<Dog[]> {
+    return await this.dogModel.find(findDogDto).exec();
+  }
+
   async findOne(id: string): Promise<Dog> {
     const dog = await this.dogModel.findById(id).exec();
     if (!dog) {
-      throw new NotFoundException('Dog not found');
+      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
     }
     return dog;
   }
 
-  async findByGenderAndBreed(
-    gender: string,
-    breed: string,
-  ): Promise<Dog[]> {
-    return await this.dogModel.find({
-      breed: breed,
-      gender: gender
-    }).exec();
-  }
-
-  async findPuppiesByBreed(breed: string): Promise<Dog[]> {
-    console.log(breed);
-    return await this.dogModel.find({
-      breed: breed,
-      isPuppy: true
-    }).exec();
-  }
-
-  async create(createDogDto: CreateDogDto, file: Express.Multer.File): Promise<Dog> {
+  async create(
+    createDogDto: CreateDogDto,
+    file: Express.Multer.File,
+  ): Promise<Dog> {
     const newDog = new this.dogModel(createDogDto);
 
     if (file) {
@@ -60,7 +50,7 @@ export class DogService {
       const filePath = path.join(uploadsDir, uniqueFilename);
       fs.writeFileSync(filePath, file.buffer);
 
-      newDog.image = uniqueFilename;
+      newDog.images[0] = uniqueFilename;
     }
 
     return await newDog.save();
@@ -71,7 +61,7 @@ export class DogService {
       .findByIdAndUpdate(id, updateDogDto, { new: true })
       .exec();
     if (!updatedDog) {
-      throw new NotFoundException('Dog not found');
+      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
     }
     return updatedDog;
   }
@@ -79,14 +69,14 @@ export class DogService {
   async delete(id: string): Promise<void> {
     const result = await this.dogModel.deleteOne({ _id: id }).exec();
     if (result.deletedCount === 0) {
-      throw new NotFoundException('Dog not found');
+      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
     }
   }
 
   async deleteSeveral(ids: string[]): Promise<void> {
     const result = await this.dogModel.deleteMany({ _id: { $in: ids } }).exec();
     if (result.deletedCount === 0) {
-      throw new NotFoundException('Dogs not found');
+      throw new HttpException('Dogs not found', HttpStatus.NOT_FOUND);
     }
   }
 }

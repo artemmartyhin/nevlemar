@@ -9,13 +9,11 @@ interface User {
   role: 'user' | 'admin' | 'moderator';
 }
 
-
 interface AuthContextProps {
   user: User | null;
   login: (user: User) => void;
   logout: () => void;
 }
-
 
 export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
@@ -38,7 +36,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     </AuthContext.Provider>
   );
 };
-
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

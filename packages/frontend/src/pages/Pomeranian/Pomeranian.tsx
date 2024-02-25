@@ -4,7 +4,7 @@ import { ProductCard } from "../../props/ProductCard";
 import { ButtonL } from "../../props/ButtonL";
 
 const Pomeranian: React.FC = () => {
-  const [gender, setGender] = useState("m");
+  const [gender, setGender] = useState(true);
   const dogs = useFetchDogs("pom", gender);
 
   return (
@@ -29,12 +29,12 @@ const Pomeranian: React.FC = () => {
                 </label>
                 <select
                   id="geneSelect"
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
+                  value={String(gender)}
+                  onChange={(e) => setGender(Boolean(JSON.parse(e.target.value)))}
                   className="mt-1 block w-200 pl-3 pr-10 py-2 text-base [font-family:'Rosario',sans-serif] border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                 >
-                  <option value="m">Male</option>
-                  <option value="f">Female</option>
+                  <option value="true">Male</option>
+                  <option value="false">Female</option>
                 </select>
               </div>
             </div>
@@ -42,16 +42,20 @@ const Pomeranian: React.FC = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-        {dogs.map((dog) => (
-          <ProductCard
-            key={dog._id} // Ensure you have a unique key for each dog
-            image={`${process.env.REACT_APP_BACKEND}/uploads/${dog.image}`}
-            name={dog.name}
-            breed={dog.breed}
-            age={String(dog.born)}
-            gender={dog.gender}
-          />
-        ))}
+        {dogs.map((dog) =>
+          !dog.images ? (
+            "404"
+          ) : (
+            <ProductCard
+              key={dog._id}
+              image={`${process.env.REACT_APP_BACKEND}/uploads/${dog.images[0]}`}
+              name={dog.name}
+              breed={dog.breed}
+              age={String(dog.born)}
+              gender={dog.gender}
+            />
+          )
+        )}
       </div>
       <div className="flex justify-center mt-10">
         <ButtonL

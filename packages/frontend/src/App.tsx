@@ -8,7 +8,7 @@ import Home from './pages/Home/Home';
 import Pomeranian from './pages/Pomeranian/Pomeranian';
 import Cvergsnaucer from './pages/Cvergsnaucer/Cvergsnaucer';
 import Puppies from './pages/Puppies/Puppies';
-import AdminPanel from './components/Admin/Admin';
+import AdminPanel from './pages/Admin/Admin';
 
 function App() {
   return (
