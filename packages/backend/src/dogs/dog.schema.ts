@@ -16,7 +16,11 @@ export class Dog extends mongoose.Document {
   @Prop()
   @IsNotEmpty()
   @IsString()
-  breed: string
+  breed: string;
+
+  @Prop()
+  @IsString()
+  description: string;
 
   @Prop()
   @IsNotEmpty()

@@ -8,7 +8,7 @@ import {
   Get,
   Param,
   Patch,
-  Delete
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DogService } from './dog.service';
@@ -49,8 +49,15 @@ export class DogController {
 
   @Patch(':id')
   @UseGuards(AdminGuard)
-  async update(@Param('id') id: string, @Body() dto: UpdateDogDto) {
-    return await this.dogService.update(id, dto);
+  @UseInterceptors(
+    FileInterceptor('image', { storage: multer.memoryStorage() }),
+  )
+  async update(
+    @Param('id') id: string,
+    @UploadedFile() file,
+    @Body() dto: UpdateDogDto,
+  ) {
+    return await this.dogService.update(id, dto, file);
   }
 
   @Delete(':id')

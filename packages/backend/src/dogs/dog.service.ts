@@ -29,14 +29,11 @@ export class DogService {
     return dog;
   }
 
-  async create(
-    dto: CreateDogDto,
-    file: Express.Multer.File,
-  ): Promise<Dog> {
+  async create(dto: CreateDogDto, file: Express.Multer.File): Promise<Dog> {
     const newDog = new this.dog(dto);
 
     if (file) {
-      const uploadsDir = '/data/uploads'
+      const uploadsDir = '/data/uploads';
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
@@ -56,13 +53,45 @@ export class DogService {
     return await newDog.save();
   }
 
-  async update(id: string, dto: UpdateDogDto): Promise<Dog> {
-    const updatedDog = await this.dog
-      .findByIdAndUpdate(id, dto, { new: true })
-      .exec();
+  async update(
+    id: string,
+    dto: UpdateDogDto,
+    file?: Express.Multer.File,
+  ): Promise<Dog> {
+    const updatedDog = await this.dog.findById(id).exec();
+
     if (!updatedDog) {
       throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
     }
+
+    if (file) {
+      const uploadsDir = '/data/uploads';
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+
+      const hash = crypto.createHash('sha256');
+      hash.update(`${Date.now()}-${Math.random()}`);
+      const hashedFilename = hash.digest('hex').substring(0, 16);
+      const fileExtension = path.extname(file.originalname);
+      const uniqueFilename = `${hashedFilename}${fileExtension}`;
+
+      const filePath = path.join(uploadsDir, uniqueFilename);
+      fs.writeFileSync(filePath, file.buffer);
+
+      if (updatedDog.images[0]) {
+        fs.unlinkSync(path.join(uploadsDir, updatedDog.images[0]));
+      }
+
+      updatedDog.images[0] = uniqueFilename;
+    }
+
+    Object.keys(dto).forEach((key) => {
+      updatedDog[key] = dto[key];
+    });
+
+    await updatedDog.save();
+
     return updatedDog;
   }
 

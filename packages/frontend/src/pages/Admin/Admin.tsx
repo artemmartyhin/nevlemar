@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-import DoogsManager from "./DogsManager";
+import DogsManager from "./DogsManager";
 
 const Admin: React.FC = () => {
   const [panel, setPanel] = useState("dogs");
@@ -35,7 +35,7 @@ const Admin: React.FC = () => {
           </div>
         </div>
       </div>
-      {panel === "dogs" ? <DoogsManager /> : <p>Manage breeds</p>}
+      {panel === "dogs" ? <DogsManager /> : <p>Manage breeds</p>}
     </div>
   );
 };

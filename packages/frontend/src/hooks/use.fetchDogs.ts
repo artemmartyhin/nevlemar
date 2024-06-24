@@ -7,6 +7,7 @@ export interface Dog {
   born: Date;
   breed: string;
   gender: boolean;
+  description: string;
   images: File[] | null;
 }
 
@@ -15,6 +16,17 @@ interface DogOptions {
   gender: boolean;
 }
 
+const useFetchDog = (id: string): Dog | null => {
+  const [dog, setDog] = useState<Dog | null>(null);
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BACKEND}/dogs/${id}`)
+      .then((response) => setDog(response.data))
+      .catch((error) => console.error("Error fetching dog:", error));
+  }, [id]);
+  return dog;
+}
 
 const useFetchDogs = (breed: string, gender: boolean): Dog[] => {
   const [dogs, setDogs] = useState([]);
@@ -35,4 +47,5 @@ const useFetchDogs = (breed: string, gender: boolean): Dog[] => {
 
 
 export default useFetchDogs;
+export { useFetchDog };
 
