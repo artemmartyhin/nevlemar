@@ -1,15 +1,45 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import { Container, Paper, Typography, Box, Button, Grid } from "@mui/material";
-import { useFetchDog } from "../../hooks/use.fetchDogs";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Container, Paper, Typography, Box, Grid } from "@mui/material";
+import { useFetchDog, fetchDog, Dog } from "../../hooks/use.fetchDogs";
 import { ButtonL } from "../../props/ButtonL";
-
-import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import { ProductCard } from "../../props/ProductCard";
 
 const DogProfile = () => {
   const { id } = useParams();
   const dog = useFetchDog(id || "");
+  const [mom, setMom] = useState<Dog | null>(null);
+  const [dad, setDad] = useState<Dog | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchParents = async () => {
+      if (dog?.mom) {
+        const momData = await fetchDog(dog.mom);
+        setMom(momData);
+      } else {
+        setMom(null);
+      }
+
+      if (dog?.dad) {
+        const dadData = await fetchDog(dog.dad);
+        setDad(dadData);
+      } else {
+        setDad(null);
+      }
+    };
+
+    if (dog) {
+      fetchParents();
+    }
+  }, [dog]);
+
+  useEffect(() => {
+    setMom(null);
+    setDad(null);
+  }, [id]);
 
   if (!dog) {
     return <div>Loading...</div>;
@@ -96,7 +126,7 @@ const DogProfile = () => {
                     <Grid item xs={12}>
                       <Typography variant="body1">
                         <strong>Gender:</strong>{" "}
-                        {dog.gender ? "male" : "female"}
+                        {dog.gender ? "Male" : "Female"}
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
@@ -132,14 +162,47 @@ const DogProfile = () => {
           </div>
         </div>
       </div>
-      <div className="w-full mt-4">
-        <div className="w-full h-[378px] bg-[#00172d] rounded-[20px] overflow-hidden">
-          <div className="relative w-[1816px] h-[1455px] top-[-360px] left-[-331px]">
-            <div className="absolute w-[978px] h-[908px] top-0 left-[837px]">
-              <div className="w-[635px] h-[635px] top-[128px] left-[204px] [background:linear-gradient(180deg,rgb(251.81,238.23,212.99)_6.17%,rgb(251.81,238.23,212.99)_75.14%,rgb(255,230.83,185.94)_100%)] rotate-[25.23deg] absolute rounded-[99px]" />
-            </div>
+      <div className="w-full h-[378px] bg-[#00172d] rounded-[20px] overflow-hidden">
+        <div className="relative w-[1816px] h-[1455px] top-[-360px] left-[-331px]">
+          <div className="absolute w-[978px] h-[908px] top-0 left-[837px]">
+            <div className="w-[635px] h-[635px] top-[128px] left-[208px] [background:linear-gradient(180deg,rgb(251.81,238.23,212.99)_6.17%,rgb(251.81,238.23,212.99)_75.14%,rgb(255,230.83,185.94)_100%)] rotate-[25.23deg] absolute rounded-[99px]" />
             <div className="absolute w-[1067px] h-[1067px] top-[389px] left-0">
-              <div className="w-[635px] h-[788px] top-[132px] left-[226px] bg-primary-colordark-blue-80 rotate-[28.25deg] absolute rounded-[99px]" />
+              <div className="w-[635px] h-[788px] top-[100px] left-[228px] bg-primary-colordark-blue-80 rotate-[28.25deg] absolute rounded-[99px]" />
+              <Grid
+                container
+                spacing={2}
+                justifyContent="center"
+                style={{ marginTop: "-50px" }}
+              >
+                {mom && (
+                  <Grid item>
+                    <div onClick={() => navigate(`/dog/${mom._id}`)}>
+                      <ProductCard
+                        image={`${process.env.REACT_APP_BACKEND}/uploads/${mom.images?.[0]}`}
+                        name={`Mom: ${mom.name}`}
+                        breed={mom.breed}
+                        age={String(mom.born)}
+                        gender={mom.gender}
+                        sx={{ transform: "scale(0.9)" }}
+                      />
+                    </div>
+                  </Grid>
+                )}
+                {dad && (
+                  <Grid item>
+                    <div onClick={() => navigate(`/dog/${dad._id}`)}>
+                      <ProductCard
+                        image={`${process.env.REACT_APP_BACKEND}/uploads/${dad.images?.[0]}`}
+                        name={`Dad: ${dad.name}`}
+                        breed={dad.breed}
+                        age={String(dad.born)}
+                        gender={dad.gender}
+                        sx={{ transform: "scale(0.9)" }}
+                      />
+                    </div>
+                  </Grid>
+                )}
+              </Grid>
             </div>
           </div>
         </div>

@@ -8,8 +8,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { debounce } from "lodash";
-import { IconButton, Button } from "@mui/material";
-import { ExpandMore, ExpandLess, FilterList } from "@mui/icons-material";
+import { Button, IconButton } from "@mui/material";
+import { FilterList } from "@mui/icons-material";
 
 import { Dog } from "../../hooks/use.fetchDogs";
 
@@ -32,12 +32,15 @@ const DogsManager: React.FC = () => {
     description: "",
     gender: true,
     images: [],
+    mom: "",
+    dad: "",
   });
   const [selectedDogs, setSelectedDogs] = useState<string[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [originalName, setOriginalName] = useState<string>("");
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false);
+  const [selectingParent, setSelectingParent] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDogs();
@@ -80,6 +83,8 @@ const DogsManager: React.FC = () => {
     formData.append("breed", newDog.breed);
     formData.append("description", newDog.description);
     formData.append("gender", String(newDog.gender));
+    formData.append("mom", newDog.mom);
+    formData.append("dad", newDog.dad);
     if (newDog.images?.length) {
       formData.append("image", newDog.images[0]);
     }
@@ -183,10 +188,13 @@ const DogsManager: React.FC = () => {
       description: "",
       gender: true,
       images: [],
+      mom: "",
+      dad: "",
     });
     setIsEditing(false);
     setPreviewUrl(null);
     setOriginalName(""); // Reset the original name
+    setSelectingParent(null); // Reset parent selection state
   };
 
   const applyFilters = () => {
@@ -254,6 +262,33 @@ const DogsManager: React.FC = () => {
     }));
   }, 300);
 
+  const handleAddParent = (parentId: string) => {
+    if (selectingParent === "mom") {
+      setNewDog((prevDog) => ({
+        ...prevDog,
+        mom: parentId,
+      }));
+    } else if (selectingParent === "dad") {
+      setNewDog((prevDog) => ({
+        ...prevDog,
+        dad: parentId,
+      }));
+    }
+    setSelectingParent(null);
+  };
+
+  const filteredParentDogs = dogs.filter(
+    (dog) =>
+      selectingParent === "mom"
+        ? !dog.gender && dog.breed === newDog.breed && new Date(dog.born) < new Date(newDog.born)
+        : dog.gender && dog.breed === newDog.breed && new Date(dog.born) < new Date(newDog.born)
+  );
+
+  const getParentName = (parentId: string) => {
+    const parent = dogs.find((dog) => dog._id === parentId);
+    return parent ? parent.name : "";
+  };
+
   if (user?.role !== "admin") {
     return <p>Sorry. You are not authorized to view this page.</p>;
   }
@@ -263,19 +298,9 @@ const DogsManager: React.FC = () => {
       <div className="flex space-x-6 max-w-7xl w-full">
         <div className="w-1/2 h-screen overflow-y-auto pr-4">
           <h2 className="text-2xl font-semibold text-gray-700 mb-6">Dog List</h2>
-          <div className="flex justify-between items-center mb-4">
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<FilterList />}
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
-            >
-              Filters
-            </Button>
-          </div>
-          {isFilterOpen && (
+          {selectingParent ? (
             <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-              <div className="mb-4">
+              <div className="flex justify-between items-center mb-4">
                 <TextField
                   label="Search by Name"
                   variant="outlined"
@@ -284,127 +309,208 @@ const DogsManager: React.FC = () => {
                   onChange={(e) => debouncedSearch(e.target.value)}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <InputLabel id="breed-label">Breed</InputLabel>
-                  <Select
-                    labelId="breed-label"
-                    name="breed"
-                    value={filters.breed}
-                    onChange={handleSelectChange}
-                    fullWidth
-                    size="small"
-                  >
-                    <MenuItem value="">All</MenuItem>
-                    <MenuItem value="pom">Pomeranian</MenuItem>
-                    <MenuItem value="cvergsnaucer">Cvergsnaucer</MenuItem>
-                  </Select>
-                </div>
-                <div>
-                  <InputLabel id="gender-label">Gender</InputLabel>
-                  <Select
-                    labelId="gender-label"
-                    name="gender"
-                    value={filters.gender}
-                    onChange={handleSelectChange}
-                    fullWidth
-                    size="small"
-                  >
-                    <MenuItem value="">All</MenuItem>
-                    <MenuItem value="Male">Male</MenuItem>
-                    <MenuItem value="Female">Female</MenuItem>
-                  </Select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <TextField
-                  label="Min Age"
-                  variant="outlined"
-                  type="number"
-                  name="minAge"
-                  value={filters.minAge}
-                  onChange={handleFilterChange}
-                  fullWidth
-                  size="small"
-                />
-                <TextField
-                  label="Max Age"
-                  variant="outlined"
-                  type="number"
-                  name="maxAge"
-                  value={filters.maxAge}
-                  onChange={handleFilterChange}
-                  fullWidth
-                  size="small"
-                />
-              </div>
+              <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                Select {selectingParent === "mom" ? "Mom" : "Dad"}
+              </h3>
+              {Array.isArray(filteredParentDogs) && (
+                <ul>
+                  {filteredParentDogs.map((dog) => (
+                    <li
+                      key={dog._id}
+                      className="flex items-center justify-between mb-4 p-2 hover:bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex items-center">
+                        <div className="flex flex-col flex-1">
+                          <span className="text-gray-900 font-medium">
+                            Name: {dog.name}
+                          </span>
+                          <span className="text-gray-600">
+                            Breed: {dog.breed.charAt(0).toUpperCase()}
+                            {dog.breed.slice(1).toLowerCase()}
+                          </span>
+                          <span className="text-gray-600">
+                            Born:{" "}
+                            {new Date(dog.born).toLocaleDateString("en-US", {
+                              month: "long",
+                              day: "2-digit",
+                              year: "numeric",
+                            })}
+                          </span>
+                          <span className="text-gray-600">
+                            Gender: {dog.gender ? "Male" : "Female"}
+                          </span>
+                        </div>
+                      </div>
+                      {dog.images && dog.images[0] && (
+                        <img
+                          src={`${process.env.REACT_APP_BACKEND}/uploads/${dog.images[0]}`}
+                          alt={dog.name}
+                          className="w-24 h-24 object-cover rounded-lg mr-2"
+                        />
+                      )}
+                      <button
+                        onClick={() => handleAddParent(dog._id)}
+                        className="px-5 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors duration-150"
+                      >
+                        Add
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
               <button
-                onClick={() => handleDeleteDogs(selectedDogs)}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition-colors duration-150"
+                onClick={handleGoBack}
+                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors duration-150"
               >
-                Delete Selected
+                Go Back
               </button>
             </div>
-          )}
-          {Array.isArray(filteredDogs) && (
-            <ul>
-              {filteredDogs.map((dog) => (
-                <li
-                  key={dog._id}
-                  className="flex items-center justify-between mb-4 p-2 hover:bg-gray-50 rounded-lg"
+          ) : (
+            <>
+              <div className="flex justify-between items-center mb-4">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<FilterList />}
+                  onClick={() => setIsFilterOpen(!isFilterOpen)}
                 >
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-5 w-5 text-blue-600 mr-3"
-                      checked={selectedDogs.includes(dog._id)}
-                      onChange={() => handleCheckboxChange(dog._id)}
+                  Filters
+                </Button>
+              </div>
+              {isFilterOpen && (
+                <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+                  <div className="mb-4">
+                    <TextField
+                      label="Search by Name"
+                      variant="outlined"
+                      fullWidth
+                      size="small"
+                      onChange={(e) => debouncedSearch(e.target.value)}
                     />
-                    <div className="flex flex-col flex-1">
-                      <span className="text-gray-900 font-medium">
-                        Name: {dog.name}
-                      </span>
-                      <span className="text-gray-600">
-                        Breed: {dog.breed.charAt(0).toUpperCase()}
-                        {dog.breed.slice(1).toLowerCase()}
-                      </span>
-                      <span className="text-gray-600">
-                        Born:{" "}
-                        {new Date(dog.born).toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "2-digit",
-                          year: "numeric",
-                        })}
-                      </span>
-                      <span className="text-gray-600">
-                        Gender: {dog.gender ? "Male" : "Female"}
-                      </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <InputLabel id="breed-label">Breed</InputLabel>
+                      <Select
+                        labelId="breed-label"
+                        name="breed"
+                        value={filters.breed}
+                        onChange={handleSelectChange}
+                        fullWidth
+                        size="small"
+                      >
+                        <MenuItem value="">All</MenuItem>
+                        <MenuItem value="pom">Pomeranian</MenuItem>
+                        <MenuItem value="cvergsnaucer">Cvergsnaucer</MenuItem>
+                      </Select>
+                    </div>
+                    <div>
+                      <InputLabel id="gender-label">Gender</InputLabel>
+                      <Select
+                        labelId="gender-label"
+                        name="gender"
+                        value={filters.gender}
+                        onChange={handleSelectChange}
+                        fullWidth
+                        size="small"
+                      >
+                        <MenuItem value="">All</MenuItem>
+                        <MenuItem value="Male">Male</MenuItem>
+                        <MenuItem value="Female">Female</MenuItem>
+                      </Select>
                     </div>
                   </div>
-                  {dog.images && dog.images[0] && (
-                    <img
-                      src={`${process.env.REACT_APP_BACKEND}/uploads/${dog.images[0]}`}
-                      alt={dog.name}
-                      className="w-24 h-24 object-cover rounded-lg mr-2"
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <TextField
+                      label="Min Age"
+                      variant="outlined"
+                      type="number"
+                      name="minAge"
+                      value={filters.minAge}
+                      onChange={handleFilterChange}
+                      fullWidth
+                      size="small"
                     />
-                  )}
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleEditDog(dog)}
-                      className="px-5 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors duration-150"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteDog(dog._id)}
-                      className="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition-colors duration-150"
-                    >
-                      Delete
-                    </button>
+                    <TextField
+                      label="Max Age"
+                      variant="outlined"
+                      type="number"
+                      name="maxAge"
+                      value={filters.maxAge}
+                      onChange={handleFilterChange}
+                      fullWidth
+                      size="small"
+                    />
                   </div>
-                </li>
-              ))}
-            </ul>
+                  <button
+                    onClick={() => handleDeleteDogs(selectedDogs)}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition-colors duration-150"
+                  >
+                    Delete Selected
+                  </button>
+                </div>
+              )}
+              {Array.isArray(filteredDogs) && (
+                <ul>
+                  {filteredDogs.map((dog) => (
+                    <li
+                      key={dog._id}
+                      className="flex items-center justify-between mb-4 p-2 hover:bg-gray-50 rounded-lg"
+                    >
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          className="form-checkbox h-5 w-5 text-blue-600 mr-3"
+                          checked={selectedDogs.includes(dog._id)}
+                          onChange={() => handleCheckboxChange(dog._id)}
+                        />
+                        <div className="flex flex-col flex-1">
+                          <span className="text-gray-900 font-medium">
+                            Name: {dog.name}
+                          </span>
+                          <span className="text-gray-600">
+                            Breed: {dog.breed.charAt(0).toUpperCase()}
+                            {dog.breed.slice(1).toLowerCase()}
+                          </span>
+                          <span className="text-gray-600">
+                            Born:{" "}
+                            {new Date(dog.born).toLocaleDateString("en-US", {
+                              month: "long",
+                              day: "2-digit",
+                              year: "numeric",
+                            })}
+                          </span>
+                          <span className="text-gray-600">
+                            Gender: {dog.gender ? "Male" : "Female"}
+                          </span>
+                        </div>
+                      </div>
+                      {dog.images && dog.images[0] && (
+                        <img
+                          src={`${process.env.REACT_APP_BACKEND}/uploads/${dog.images[0]}`}
+                          alt={dog.name}
+                          className="w-24 h-24 object-cover rounded-lg mr-2"
+                        />
+                      )}
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleEditDog(dog)}
+                          className="px-5 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors duration-150"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteDog(dog._id)}
+                          className="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition-colors duration-150"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
           )}
         </div>
         <div className="w-1/2 pl-4 pr-4">
@@ -484,6 +590,37 @@ const DogsManager: React.FC = () => {
                     alt="Preview"
                     className="h-48 w-48 object-cover rounded-lg"
                   />
+                </div>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setSelectingParent("mom")}
+              >
+                Add Mom
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setSelectingParent("dad")}
+              >
+                Add Dad
+              </Button>
+            </div>
+            <div className="mb-4">
+              {(newDog.mom || newDog.dad) && (
+                <div>
+                  <h3 className="text-lg font-semibold">Selected Parents:</h3>
+                  <ul>
+                    {newDog.mom && (
+                      <li className="text-gray-700">Mom: {getParentName(newDog.mom)}</li>
+                    )}
+                    {newDog.dad && (
+                      <li className="text-gray-700">Dad: {getParentName(newDog.dad)}</li>
+                    )}
+                  </ul>
                 </div>
               )}
             </div>
