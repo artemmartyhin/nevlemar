@@ -21,5 +21,13 @@ export class CreateDogDto {
 
   @IsString()
   @IsOptional()
-  readonly parents: string[];
+  readonly mom: string;
+
+  @IsString()
+  @IsOptional()
+  readonly dad: string;
+
+  @IsString()
+  @IsOptional()
+  readonly description: string;
 }

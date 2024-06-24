@@ -1,21 +1,33 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsOptional, IsString, IsNotEmpty } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UpdateDogDto {
   @IsString()
-  @IsOptional()
-  readonly name?: string;
+  @IsNotEmpty()
+  readonly name: string;
 
-  @IsDateString()
-  @IsOptional()
   @Transform(({ value }) => new Date(value))
-  readonly born?: Date;
+  @IsDate()
+  @IsNotEmpty()
+  readonly born: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly breed: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly gender: boolean;
 
   @IsString()
   @IsOptional()
-  readonly breed?: string;
+  readonly mom: string;
 
   @IsString()
   @IsOptional()
-  readonly gender?: boolean
+  readonly dad: string;
+
+  @IsString()
+  @IsOptional()
+  readonly description: string;
 }

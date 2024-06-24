@@ -16,15 +16,22 @@ export class Dog extends mongoose.Document {
   @Prop()
   @IsNotEmpty()
   @IsString()
-  breed: string
+  breed: string;
+
+  @Prop()
+  @IsString()
+  description: string;
 
   @Prop()
   @IsNotEmpty()
   @IsBoolean()
   gender: boolean;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Dog' })
-  parents: [mongoose.Types.ObjectId];
+  @Prop()
+  mom: string;
+
+  @Prop()
+  dad: string;
 
   @Prop()
   images: string[];
