@@ -162,47 +162,49 @@ const DogProfile = () => {
           </div>
         </div>
       </div>
-      <div className="w-full h-[378px] bg-[#00172d] rounded-[20px] overflow-hidden">
-        <div className="relative w-[1816px] h-[1455px] top-[-360px] left-[-331px]">
-          <div className="absolute w-[978px] h-[908px] top-0 left-[837px]">
-            <div className="w-[635px] h-[635px] top-[128px] left-[208px] [background:linear-gradient(180deg,rgb(251.81,238.23,212.99)_6.17%,rgb(251.81,238.23,212.99)_75.14%,rgb(255,230.83,185.94)_100%)] rotate-[25.23deg] absolute rounded-[99px]" />
-            <div className="absolute w-[1067px] h-[1067px] top-[389px] left-0">
-              <div className="w-[635px] h-[788px] top-[100px] left-[228px] bg-primary-colordark-blue-80 rotate-[28.25deg] absolute rounded-[99px]" />
-              <Grid
-                container
-                spacing={2}
-                justifyContent="center"
-                style={{ marginTop: "-50px" }}
-              >
-                {mom && (
-                  <Grid item>
-                    <div onClick={() => navigate(`/dog/${mom._id}`)}>
-                      <ProductCard
-                        image={`${process.env.REACT_APP_BACKEND}/uploads/${mom.images?.[0]}`}
-                        name={`Mom: ${mom.name}`}
-                        breed={mom.breed}
-                        age={String(mom.born)}
-                        gender={mom.gender}
-                        sx={{ transform: "scale(0.9)" }}
-                      />
-                    </div>
-                  </Grid>
-                )}
-                {dad && (
-                  <Grid item>
-                    <div onClick={() => navigate(`/dog/${dad._id}`)}>
-                      <ProductCard
-                        image={`${process.env.REACT_APP_BACKEND}/uploads/${dad.images?.[0]}`}
-                        name={`Dad: ${dad.name}`}
-                        breed={dad.breed}
-                        age={String(dad.born)}
-                        gender={dad.gender}
-                        sx={{ transform: "scale(0.9)" }}
-                      />
-                    </div>
-                  </Grid>
-                )}
-              </Grid>
+      <div className="w-full mt-4">
+        <div className="w-full h-[378px] bg-[#00172d] rounded-[20px] overflow-hidden">
+          <div className="relative w-[1816px] h-[1455px] top-[-360px] left-[-331px]">
+            <div className="absolute w-[978px] h-[908px] top-0 left-[837px]">
+              <div className="w-[635px] h-[635px] top-[128px] left-[208px] [background:linear-gradient(180deg,rgb(251.81,238.23,212.99)_6.17%,rgb(251.81,238.23,212.99)_75.14%,rgb(255,230.83,185.94)_100%)] rotate-[25.23deg] absolute rounded-[99px]" />
+              <div className="absolute w-[1067px] h-[1067px] top-[389px] left-0">
+                <div className="w-[635px] h-[788px] top-[100px] left-[228px] bg-primary-colordark-blue-80 rotate-[28.25deg] absolute rounded-[99px]" />
+                <Grid
+                  container
+                  spacing={2}
+                  justifyContent="center"
+                  style={{ marginTop: "-50px", marginLeft: "-75px" }}
+                >
+                  {mom && (
+                    <Grid item>
+                      <div onClick={() => navigate(`/dog/${mom._id}`)}>
+                        <ProductCard
+                          image={`${process.env.REACT_APP_BACKEND}/uploads/${mom.images?.[0]}`}
+                          name={`Mom: ${mom.name}`}
+                          breed={mom.breed}
+                          age={String(mom.born)}
+                          gender={mom.gender}
+                          sx={{ transform: "scale(0.9)" }}
+                        />
+                      </div>
+                    </Grid>
+                  )}
+                  {dad && (
+                    <Grid item>
+                      <div onClick={() => navigate(`/dog/${dad._id}`)}>
+                        <ProductCard
+                          image={`${process.env.REACT_APP_BACKEND}/uploads/${dad.images?.[0]}`}
+                          name={`Dad: ${dad.name}`}
+                          breed={dad.breed}
+                          age={String(dad.born)}
+                          gender={dad.gender}
+                          sx={{ transform: "scale(0.9)" }}
+                        />
+                      </div>
+                    </Grid>
+                  )}
+                </Grid>
+              </div>
             </div>
           </div>
         </div>

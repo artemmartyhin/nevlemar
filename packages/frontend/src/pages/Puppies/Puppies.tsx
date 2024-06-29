@@ -5,7 +5,7 @@ import { ButtonL } from "../../props/ButtonL";
 
 const Puppies: React.FC = () => {
   const [breed, setBreed] = useState("pom");
-  const dogs = useFetchPuppies(breed);
+  const dogs = useFetchPuppies(breed, "male");
 
   return (
     <div>
@@ -40,32 +40,6 @@ const Puppies: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-        {dogs.map((dog) =>
-          !dog.images ? (
-            "404"
-          ) : (
-            <ProductCard
-              key={dog._id}
-              image={`${process.env.REACT_APP_BACKEND}/uploads/${dog.images[0]}`}
-              name={dog.name}
-              breed={dog.breed}
-              age={String(dog.born)}
-              gender={dog.gender}
-            />
-          )
-        )}
-      </div>
-      <div className="flex justify-center mt-10">
-        <ButtonL
-          iconLeft={false}
-          iconOnly={false}
-          iconRight
-          text="View more"
-          buttonType="outline"
-          textColor="#00172d"
-        />
       </div>
     </div>
   );

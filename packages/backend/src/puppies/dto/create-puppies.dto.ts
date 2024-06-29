@@ -1,27 +1,33 @@
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, ValidateNested, IsArray } from 'class-validator';
-import { Types } from 'mongoose';
+import { IsNotEmpty, IsString, IsDate, IsArray } from 'class-validator';
 
 export class CreatePuppiesDto {
-  @IsString()
-  @IsNotEmpty()
-  readonly name: string;
-
-  @IsNotEmpty()
-  readonly mother: Types.ObjectId;
-
-  @IsNotEmpty()
-  readonly father: Types.ObjectId;
-
-  @IsString()
-  @IsNotEmpty()
-  readonly breed: string;
-
   @IsArray()
-  @IsNotEmpty()
-  readonly puppies: Types.ObjectId[];
+  puppies: CreatePuppyDto[];
 
   @IsString()
+  mom: string;
+
+  @IsString()
+  dad: string;
+
   @IsNotEmpty()
-  readonly image: string;
+  @IsString()
+  breed: string;
+}
+
+
+export class CreatePuppyDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsDate()
+  born: Date;
+
+  @IsString()
+  gender: string;
+
+  @IsString()
+  image: string;
 }

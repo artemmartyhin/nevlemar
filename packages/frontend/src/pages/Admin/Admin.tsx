@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import DogsManager from "./DogsManager";
+import PuppiesManager from "./PuppiesManager";
 
 const Admin: React.FC = () => {
   const [panel, setPanel] = useState("dogs");
@@ -28,14 +29,14 @@ const Admin: React.FC = () => {
                   className="mt-1 block w-200 pl-3 pr-10 py-2 text-base [font-family:'Rosario',sans-serif] border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                 >
                   <option value="dogs">Dogs Manager</option>
-                  <option value="breeds">Breeds Manager</option>
+                  <option value="breeds">Puppies Manager</option>
                 </select>
               </div>
             </div>
           </div>
         </div>
       </div>
-      {panel === "dogs" ? <DogsManager /> : <p>Manage breeds</p>}
+      {panel === "dogs" ? <DogsManager /> : <PuppiesManager />}
     </div>
   );
 };

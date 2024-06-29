@@ -1,29 +1,42 @@
 import * as mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsDate } from 'class-validator';
 
 @Schema()
-export class Puppies extends mongoose.Document {
+export class Puppy {
   @Prop()
   @IsNotEmpty()
   @IsString()
   name: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Dog' })
-  @IsNotEmpty()
-  mother: mongoose.Types.ObjectId;
-
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Dog' })
-  @IsNotEmpty()
-  father: mongoose.Types.ObjectId;
+  @Prop()
+  image: string;
 
   @Prop()
   @IsNotEmpty()
-  breed: string;
+  @IsDate()
+  born: Date;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Dog' })
+  @Prop()
+  @IsString()
+  gender: string;
+}
+
+@Schema()
+export class Puppies extends mongoose.Document {
+  @Prop({ type: [{ type: Puppy }] })
+  puppies: Puppy[];
+
+  @Prop()
+  mom: string;
+
+  @Prop()
+  dad: string;
+
+  @Prop()
   @IsNotEmpty()
-  puppies: [mongoose.Types.ObjectId];
+  @IsString()
+  breed: string;
 
   @Prop()
   @IsNotEmpty()
@@ -31,4 +44,5 @@ export class Puppies extends mongoose.Document {
   image: string;
 }
 
+export const PuppySchema = SchemaFactory.createForClass(Puppy);
 export const PuppiesSchema = SchemaFactory.createForClass(Puppies);

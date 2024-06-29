@@ -1,8 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Puppies } from './puppies.schema';
-
+import { Puppies, Puppy } from './puppies.schema';
 import { CreatePuppiesDto } from './dto/create-puppies.dto';
 import { UpdatePuppiesDto } from './dto/update-puppies.dto';
 import { FindPuppiesDto } from './dto/find-puppies.dto';
@@ -12,71 +11,107 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class PuppiesService {
-  constructor(@InjectModel('Dog') private readonly puppies: Model<Puppies>) {}
+  constructor(
+    @InjectModel('Puppies') private readonly puppiesModel: Model<Puppies>,
+  ) {}
 
   async findAll(): Promise<Puppies[]> {
-    return await this.puppies.find().exec();
+    return await this.puppiesModel.find().exec();
   }
 
   async findByOptions(dto: FindPuppiesDto): Promise<Puppies[]> {
-    return await this.puppies.find(dto).exec();
+    return await this.puppiesModel.find(dto).exec();
   }
 
   async findOne(id: string): Promise<Puppies> {
-    const dog = await this.puppies.findById(id).exec();
-    if (!dog) {
-      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
+    const puppies = await this.puppiesModel.findById(id).exec();
+    if (!puppies) {
+      throw new HttpException('Puppies not found', HttpStatus.NOT_FOUND);
     }
-    return dog;
+    return puppies;
   }
 
   async create(
     dto: CreatePuppiesDto,
-    file: Express.Multer.File,
+    files: Express.Multer.File[],
   ): Promise<Puppies> {
-    const newDog = new this.puppies(dto);
+    const newPuppies = new this.puppiesModel({
+      mom: dto.mom,
+      dad: dto.dad,
+      breed: dto.breed,
+    });
 
-    if (file) {
-      const uploadsDir = '/data/uploads'
+    if (files && files.length > 0) {
+      const uploadsDir = '/data/uploads';
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
 
-      const hash = crypto.createHash('sha256');
-      hash.update(`${Date.now()}-${Math.random()}`);
-      const hashedFilename = hash.digest('hex').substring(0, 16);
-      const fileExtension = path.extname(file.originalname);
-      const uniqueFilename = `${hashedFilename}${fileExtension}`;
+      if (files[0]) {
+        const hashOuter = crypto.createHash('sha256');
+        hashOuter.update(`${Date.now()}-${Math.random()}`);
+        const hashedFilenameOuter = hashOuter.digest('hex').substring(0, 16);
+        const fileExtensionOuter = path.extname(files[0].originalname);
+        const uniqueFilenameOuter = `${hashedFilenameOuter}${fileExtensionOuter}`;
 
-      const filePath = path.join(uploadsDir, uniqueFilename);
-      fs.writeFileSync(filePath, file.buffer);
+        const filePathOuter = path.join(uploadsDir, uniqueFilenameOuter);
+        fs.writeFileSync(filePathOuter, files[0].buffer);
 
-      newDog.image = uniqueFilename;
+        newPuppies.image = uniqueFilenameOuter;
+      }
+
+      const puppiesArray: Puppy[] = [];
+      for (let i = 1; i < files.length; i++) {
+        if (files[i]) {
+          const hash = crypto.createHash('sha256');
+          hash.update(`${Date.now()}-${Math.random()}-${i}`);
+          const hashedFilename = hash.digest('hex').substring(0, 16);
+          const fileExtension = path.extname(files[i].originalname);
+          const uniqueFilename = `${hashedFilename}${fileExtension}`;
+
+          const filePath = path.join(uploadsDir, uniqueFilename);
+          fs.writeFileSync(filePath, files[i].buffer);
+
+          const puppy: Puppy = {
+            name: dto.puppies[i - 1].name,
+            born: dto.puppies[i - 1].born,
+            gender: dto.puppies[i - 1].gender,
+            image: uniqueFilename,
+          };
+
+          puppiesArray.push(puppy);
+        }
+      }
+
+      newPuppies.puppies = puppiesArray;
     }
-    return await newDog.save();
+
+    return await newPuppies.save();
   }
 
   async update(id: string, dto: UpdatePuppiesDto): Promise<Puppies> {
-    const updatedDog = await this.puppies
+    const updatedPuppies = await this.puppiesModel
       .findByIdAndUpdate(id, dto, { new: true })
       .exec();
-    if (!updatedDog) {
-      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
+    if (!updatedPuppies) {
+      throw new HttpException('Puppies not found', HttpStatus.NOT_FOUND);
     }
-    return updatedDog;
+    return updatedPuppies;
   }
 
   async delete(id: string): Promise<void> {
-    const result = await this.puppies.deleteOne({ _id: id }).exec();
+    const result = await this.puppiesModel.deleteOne({ _id: id }).exec();
     if (result.deletedCount === 0) {
-      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Puppies not found', HttpStatus.NOT_FOUND);
     }
   }
 
   async deleteSeveral(ids: string[]): Promise<void> {
-    const result = await this.puppies.deleteMany({ _id: { $in: ids } }).exec();
+    const result = await this.puppiesModel
+      .deleteMany({ _id: { $in: ids } })
+      .exec();
     if (result.deletedCount === 0) {
-      throw new HttpException('Dogs not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Puppies not found', HttpStatus.NOT_FOUND);
     }
   }
 }

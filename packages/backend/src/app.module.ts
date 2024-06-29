@@ -7,7 +7,10 @@ import { DogSchema } from './dogs/dog.schema';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { PuppiesSchema } from './puppies/puppies.schema';
+import { PuppySchema } from './puppies/puppies.schema';
+import { PuppiesService } from './puppies/puppies.service';
+import { PuppiesController } from './puppies/puppies.controller';
 
 @Module({
   
@@ -16,6 +19,8 @@ import { join } from 'path';
       useFactory: mongooseConfig,
     }),
     MongooseModule.forFeature([{ name: 'Dog', schema: DogSchema }]),
+    MongooseModule.forFeature([{ name: 'Puppies', schema: PuppiesSchema }]),
+    MongooseModule.forFeature([{ name: 'Puppy', schema: PuppySchema }]),
     AuthModule,
     UserModule,
     ServeStaticModule.forRoot({
@@ -24,8 +29,8 @@ import { join } from 'path';
 
     })
   ],
-  controllers: [DogController],
-  providers: [DogService],
+  controllers: [DogController, PuppiesController],
+  providers: [DogService, PuppiesService],
 })
 
 
