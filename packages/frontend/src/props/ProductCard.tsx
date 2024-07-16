@@ -1,10 +1,11 @@
+// ProductCard.tsx
 import React from "react";
 
 interface ProductCardProps {
-  name: string;
-  breed: string;
-  gender: boolean;
-  age: string;
+  name: React.ReactNode;
+  breed?: string;
+  gender?: boolean;
+  age?: string;
   className?: string;
   image?: string;
   sx?: React.CSSProperties;
@@ -19,12 +20,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div
       className={`shadow-md rounded-lg bg-white relative m-2 ${className}`}
-      style={{ width: "264px", ...sx }}
+      style={{ width: "264px" , ...sx }}
     >
       <div className="w-full h-[300px] overflow-hidden rounded-t-lg bg-white">
         <img
           className="object-contain h-full w-full rounded-[10px]"
-          alt={name}
+          alt={typeof name === "string" ? name : "Dog"}
           src={image}
         />
       </div>

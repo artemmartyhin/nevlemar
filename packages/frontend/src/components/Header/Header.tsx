@@ -62,7 +62,7 @@ const Header = () => {
               <Link to="/puppies">Puppies</Link>
             </div>
             <div className="text-sky-950 text-lg font-bold leading-10">
-              <Link to="/puppies">About us</Link>
+              <Link to="/aboutus">About us</Link>
             </div>
             {user?.role == "admin" ? (
               <div className="text-sky-950 text-lg font-bold leading-10">
