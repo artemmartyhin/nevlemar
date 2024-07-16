@@ -8,8 +8,8 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { debounce } from "lodash";
-import { Button, IconButton, Collapse } from "@mui/material";
-import { FilterList, ExpandMore, ExpandLess, Save } from "@mui/icons-material";
+import { Button, IconButton, Collapse, Grid, Box } from "@mui/material";
+import { FilterList, ExpandMore, ExpandLess, Save, Delete } from "@mui/icons-material";
 
 import { Dog } from "../../hooks/use.fetchDogs";
 import { Puppy, Puppies } from "../../hooks/use.fetchPuppies";
@@ -33,6 +33,7 @@ const PuppiesManager: React.FC = () => {
     dad: "",
     breed: "pom",
     image: null,
+    description: "",
   });
   const [puppyPreviews, setPuppyPreviews] = useState<string[]>([]);
   const [selectedPuppies, setSelectedPuppies] = useState<string[]>([]);
@@ -74,7 +75,8 @@ const PuppiesManager: React.FC = () => {
     if (
       newPuppies.puppies.length === 0 ||
       newPuppies.puppies.some(
-        (puppy) => !puppy.name || !puppy.born || !puppy.image
+        (puppy, index) =>
+          !puppy.name || !puppy.born || (!puppy.image && !puppyPreviews[index])
       )
     ) {
       alert("Please fill out all fields for each puppy and add images.");
@@ -83,23 +85,40 @@ const PuppiesManager: React.FC = () => {
 
     const formData = new FormData();
     formData.append("breed", newPuppies.breed);
-    formData.append("mom", newPuppies.mom);
-    formData.append("dad", newPuppies.dad);
+    formData.append("mom", newPuppies.mom || "");
+    formData.append("dad", newPuppies.dad || "");
+    formData.append("description", newPuppies.description || "");
+
     if (newPuppies.image) {
       formData.append("files", newPuppies.image);
+    } else if (isEditing && outerPreviewUrl) {
+      const existingMainImage = new File(
+        [await fetch(outerPreviewUrl).then((res) => res.blob())],
+        "mainImage.jpg"
+      );
+      formData.append("files", existingMainImage);
     }
 
-    newPuppies.puppies.forEach((puppy, index) => {
-      formData.append(`puppies[${index}][name]`, puppy.name);
-      formData.append(
-        `puppies[${index}][born]`,
-        new Date(puppy.born).toISOString()
-      ); // Convert to Date object
-      formData.append(`puppies[${index}][gender]`, puppy.gender);
-      if (puppy.image) {
-        formData.append("files", puppy.image);
-      }
-    });
+    await Promise.all(
+      newPuppies.puppies.map(async (puppy, index) => {
+        formData.append(`puppies[${index}][name]`, puppy.name);
+        formData.append(`puppies[${index}][born]`, puppy.born.toISOString());
+        formData.append(`puppies[${index}][gender]`, puppy.gender);
+        if (puppy.image) {
+          formData.append(
+            "files",
+            puppy.image,
+            `puppyImage${index}_${Date.now()}.jpg`
+          );
+        } else if (isEditing && puppyPreviews[index]) {
+          const existingPuppyImage = new File(
+            [await fetch(puppyPreviews[index]).then((res) => res.blob())],
+            `puppyImage${index}.jpg`
+          );
+          formData.append("files", existingPuppyImage);
+        }
+      })
+    );
 
     try {
       if (isEditing) {
@@ -108,11 +127,17 @@ const PuppiesManager: React.FC = () => {
           formData,
           {
             withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
       } else {
         await axios.post(`${process.env.REACT_APP_BACKEND}/puppies`, formData, {
           withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
       }
 
@@ -165,24 +190,22 @@ const PuppiesManager: React.FC = () => {
       .map((p) => {
         if (typeof p.image === "string") {
           return `${process.env.REACT_APP_BACKEND}/uploads/${p.image}`;
-        } else if (p.image instanceof File) {
-          return URL.createObjectURL(p.image);
         }
-        // Handle case where p.image is null or undefined
-        return ""; // or any default value you prefer
+        return "";
       })
-      .filter((url) => url !== null); // Filter out null values
+      .filter((url) => url !== "");
 
     setNewPuppies({
       _id: puppy._id,
       puppies: puppy.puppies.map((p) => ({
         ...p,
-        born: new Date(p.born), // Convert to Date object
+        born: new Date(p.born),
       })),
       mom: puppy.mom,
       dad: puppy.dad,
       breed: puppy.breed,
       image: puppy.image,
+      description: puppy.description || "", // Ensure description is a string
     });
 
     if (puppy.image) {
@@ -195,9 +218,9 @@ const PuppiesManager: React.FC = () => {
 
     setPuppyPreviews(updatedPuppyPreviews);
     setIsEditing(true);
-    setOriginalName(puppy.breed); // Set the original name for the title
+    setOriginalName(puppy.breed);
   };
-  
+
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
@@ -244,12 +267,13 @@ const PuppiesManager: React.FC = () => {
       dad: "",
       breed: "pom",
       image: null,
+      description: "", // Add this line
     });
     setPuppyPreviews([]);
     setIsEditing(false);
     setOuterPreviewUrl(null);
-    setOriginalName(""); // Reset the original name
-    setSelectingParent(null); // Reset parent selection state
+    setOriginalName("");
+    setSelectingParent(null);
     setExpandedPuppies([]);
   };
 
@@ -540,7 +564,7 @@ const PuppiesManager: React.FC = () => {
                           onChange={() => handleCheckboxChange(puppy._id)}
                         />
                         <div className="flex flex-col flex-1">
-                          <span className="text-gray-900 font-medium">
+                          <span className="text-gray-600">
                             Breed: {puppy.breed}
                           </span>
                           <span className="text-gray-600">
@@ -592,13 +616,29 @@ const PuppiesManager: React.FC = () => {
             onSubmit={handleSubmit}
           >
             <div className="grid grid-cols-1 gap-4 mb-4">
-              <input
-                type="text"
-                placeholder="Breed"
-                className="p-2 border border-gray-300 rounded w-full mb-2"
-                value={newPuppies.breed}
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <InputLabel id="breed-label">Breed</InputLabel>
+                <Select
+                  labelId="breed-label"
+                  name="breed"
+                  value={newPuppies.breed}
+                  onChange={(e) =>
+                    setNewPuppies({ ...newPuppies, breed: e.target.value })
+                  }
+                  fullWidth
+                  size="small"
+                >
+                  <MenuItem value="pom">Pomeranian</MenuItem>
+                  <MenuItem value="cvergsnaucer">Cvergsnaucer</MenuItem>
+                </Select>
+              </div>
+              <textarea
+                placeholder="Description"
+                className="p-2 border border-gray-300 rounded w-full"
+                value={newPuppies.description}
+                rows={6} // Adjust the number of rows as needed
                 onChange={(e) =>
-                  setNewPuppies({ ...newPuppies, breed: e.target.value })
+                  setNewPuppies({ ...newPuppies, description: e.target.value })
                 }
               />
               <div className="mb-4">
@@ -618,20 +658,26 @@ const PuppiesManager: React.FC = () => {
                   )}
                 </ul>
               </div>
-              <button
-                type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
-                onClick={() => setSelectingParent("mom")}
-              >
-                Select Mom
-              </button>
-              <button
-                type="button"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
-                onClick={() => setSelectingParent("dad")}
-              >
-                Select Dad
-              </button>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+                    onClick={() => setSelectingParent("mom")}
+                  >
+                    Select Mom
+                  </button>
+                </Grid>
+                <Grid item xs={6}>
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+                    onClick={() => setSelectingParent("dad")}
+                  >
+                    Select Dad
+                  </button>
+                </Grid>
+              </Grid>
               <input
                 type="file"
                 accept="image/*"
@@ -650,7 +696,7 @@ const PuppiesManager: React.FC = () => {
             </div>
             <div className="grid grid-cols-1 gap-4 mb-4">
               {newPuppies.puppies.map((puppy, index) => (
-                <div key={index} className="mb-4">
+                <div key={index} className="mb-4 relative">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold text-gray-700">
                       {puppy.name ? puppy.name : `Puppy ${index + 1}`}
@@ -665,6 +711,26 @@ const PuppiesManager: React.FC = () => {
                         <ExpandMore />
                       )}
                     </IconButton>
+                    {!puppy._id && (
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          const updatedPuppies = newPuppies.puppies.filter(
+                            (_, i) => i !== index
+                          );
+                          setNewPuppies({
+                            ...newPuppies,
+                            puppies: updatedPuppies,
+                          });
+                          const updatedPreviews = puppyPreviews.filter(
+                            (_, i) => i !== index
+                          );
+                          setPuppyPreviews(updatedPreviews);
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
+                    )}
                   </div>
                   <Collapse in={expandedPuppies.includes(index)}>
                     <input
@@ -740,47 +806,51 @@ const PuppiesManager: React.FC = () => {
                 </div>
               ))}
               {!expandedPuppies.length && (
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
-                  onClick={() => {
-                    setNewPuppies({
-                      ...newPuppies,
-                      puppies: [
-                        ...newPuppies.puppies,
-                        {
-                          _id: "",
-                          name: "",
-                          born: new Date(),
-                          gender: "Male",
-                          image: null,
-                        },
-                      ],
-                    });
-                    setExpandedPuppies([newPuppies.puppies.length]);
-                  }}
-                >
-                  Add Puppy
-                </button>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <button
+                      type="button"
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+                      onClick={() => {
+                        setNewPuppies({
+                          ...newPuppies,
+                          puppies: [
+                            ...newPuppies.puppies,
+                            {
+                              _id: "",
+                              name: "",
+                              born: new Date(),
+                              gender: "Male",
+                              image: null,
+                            },
+                          ],
+                        });
+                        setExpandedPuppies([newPuppies.puppies.length]);
+                      }}
+                    >
+                      Add Puppy
+                    </button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+                    >
+                      {isEditing ? "Save" : "Send Form"}
+                    </button>
+                  </Grid>
+                </Grid>
               )}
             </div>
-            <div className="flex space-x-4">
+            {isEditing && (
               <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+                type="button"
+                onClick={handleGoBack}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 w-full"
               >
-                {isEditing ? "Save" : "Add Puppies"}
+                Go Back
               </button>
-              {isEditing && (
-                <button
-                  type="button"
-                  onClick={handleGoBack}
-                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 w-full"
-                >
-                  Go Back
-                </button>
-              )}
-            </div>
+            )}
           </form>
         </div>
       </div>

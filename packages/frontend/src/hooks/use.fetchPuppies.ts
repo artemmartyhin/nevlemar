@@ -14,37 +14,24 @@ export interface Puppies {
   puppies: Puppy[];
   mom: string;
   dad: string;
+  description: string;
   breed: string;
   image: File | null;
 }
 
 interface PuppyOptions {
   breed: string;
-  gender: string;
+  gender?: string;
 }
 
-const useFetchPuppy = (id: string): Puppy | null => {
-  const [puppy, setPuppy] = useState<Puppy | null>(null);
+const useFetchPuppies = (breed: string, gender?: string): Puppy[] => {
+  const [puppies, setPuppies] = useState<Puppy[]>([]);
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BACKEND}/puppies/${id}`)
-      .then((response) => setPuppy(response.data))
-      .catch((error) => console.error("Error fetching puppy:", error));
-  }, [id]);
-
-  return puppy;
-};
-
-const useFetchPuppies = (breed: string, gender: string): Puppies[] => {
-  const [puppies, setPuppies] = useState<Puppies[]>([]);
-
-  const data: PuppyOptions = {
-    breed,
-    gender,
-  };
-
-  useEffect(() => {
+    const data: PuppyOptions = { breed };
+    if (gender) {
+      data.gender = gender;
+    }
     axios
       .post(`${process.env.REACT_APP_BACKEND}/puppies/find`, data)
       .then((response) => setPuppies(response.data))
@@ -54,7 +41,7 @@ const useFetchPuppies = (breed: string, gender: string): Puppies[] => {
   return puppies;
 };
 
-const fetchPuppy = async (id: string): Promise<Puppy> => {
+const fetchPuppies = async (id: string): Promise<Puppies> => {
   const response = await axios.get(
     `${process.env.REACT_APP_BACKEND}/puppies/${id}`
   );
@@ -62,5 +49,4 @@ const fetchPuppy = async (id: string): Promise<Puppy> => {
 };
 
 export default useFetchPuppies;
-export { fetchPuppy };
-export { useFetchPuppy };
+export { fetchPuppies };

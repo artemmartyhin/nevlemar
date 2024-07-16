@@ -1,21 +1,38 @@
-import { IsDateString, IsOptional, IsString } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpdatePuppiesDto {
-  @IsString()
-  @IsOptional()
-  readonly name?: string;
-
-  @IsDateString()
-  @IsOptional()
-  @Transform(({ value }) => new Date(value))
-  readonly born?: Date;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UpdatePuppyDto)
+  puppies: UpdatePuppyDto[];
 
   @IsString()
   @IsOptional()
-  readonly breed?: string;
+  mom?: string;
 
   @IsString()
   @IsOptional()
-  readonly gender?: boolean
+  dad?: string;
+
+  @IsString()
+  @IsOptional()
+  breed?: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+}
+
+export class UpdatePuppyDto {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsOptional()
+  born?: Date;
+
+  @IsString()
+  @IsOptional()
+  gender?: string;
 }

@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -5,9 +8,6 @@ import { Puppies, Puppy } from './puppies.schema';
 import { CreatePuppiesDto } from './dto/create-puppies.dto';
 import { UpdatePuppiesDto } from './dto/update-puppies.dto';
 import { FindPuppiesDto } from './dto/find-puppies.dto';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as crypto from 'crypto';
 
 @Injectable()
 export class PuppiesService {
@@ -31,6 +31,15 @@ export class PuppiesService {
     return puppies;
   }
 
+  private generateFilename(originalname: string, prefix: string): string {
+    const timestamp = Date.now();
+    const hash = crypto.createHash('sha256');
+    hash.update(`${timestamp}-${Math.random()}`);
+    const hashedFilename = hash.digest('hex').substring(0, 16);
+    const fileExtension = path.extname(originalname);
+    return `${hashedFilename}-${prefix}_${timestamp}${fileExtension}`;
+  }
+
   async create(
     dto: CreatePuppiesDto,
     files: Express.Multer.File[],
@@ -39,6 +48,7 @@ export class PuppiesService {
       mom: dto.mom,
       dad: dto.dad,
       breed: dto.breed,
+      description: dto.description,
     });
 
     if (files && files.length > 0) {
@@ -47,41 +57,32 @@ export class PuppiesService {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
 
-      if (files[0]) {
-        const hashOuter = crypto.createHash('sha256');
-        hashOuter.update(`${Date.now()}-${Math.random()}`);
-        const hashedFilenameOuter = hashOuter.digest('hex').substring(0, 16);
-        const fileExtensionOuter = path.extname(files[0].originalname);
-        const uniqueFilenameOuter = `${hashedFilenameOuter}${fileExtensionOuter}`;
-
-        const filePathOuter = path.join(uploadsDir, uniqueFilenameOuter);
-        fs.writeFileSync(filePathOuter, files[0].buffer);
-
-        newPuppies.image = uniqueFilenameOuter;
+      // Save the main image
+      const mainImageFile = files[0];
+      if (mainImageFile) {
+        const uniqueFilename = this.generateFilename(mainImageFile.originalname, 'mainImage');
+        const filePath = path.join(uploadsDir, uniqueFilename);
+        fs.writeFileSync(filePath, mainImageFile.buffer);
+        newPuppies.image = uniqueFilename;
       }
 
-      const puppiesArray: Puppy[] = [];
-      for (let i = 1; i < files.length; i++) {
-        if (files[i]) {
-          const hash = crypto.createHash('sha256');
-          hash.update(`${Date.now()}-${Math.random()}-${i}`);
-          const hashedFilename = hash.digest('hex').substring(0, 16);
-          const fileExtension = path.extname(files[i].originalname);
-          const uniqueFilename = `${hashedFilename}${fileExtension}`;
-
+      // Save puppies images
+      const puppiesArray: Puppy[] = dto.puppies.map((puppy, index) => {
+        const puppyImageFile = files[index + 1];
+        let uniqueFilename = '';
+        if (puppyImageFile) {
+          uniqueFilename = this.generateFilename(puppyImageFile.originalname, `puppyImage${index}`);
           const filePath = path.join(uploadsDir, uniqueFilename);
-          fs.writeFileSync(filePath, files[i].buffer);
-
-          const puppy: Puppy = {
-            name: dto.puppies[i - 1].name,
-            born: dto.puppies[i - 1].born,
-            gender: dto.puppies[i - 1].gender,
-            image: uniqueFilename,
-          };
-
-          puppiesArray.push(puppy);
+          fs.writeFileSync(filePath, puppyImageFile.buffer);
         }
-      }
+
+        return {
+          name: puppy.name,
+          born: puppy.born,
+          gender: puppy.gender,
+          image: uniqueFilename,
+        };
+      });
 
       newPuppies.puppies = puppiesArray;
     }
@@ -89,14 +90,93 @@ export class PuppiesService {
     return await newPuppies.save();
   }
 
-  async update(id: string, dto: UpdatePuppiesDto): Promise<Puppies> {
-    const updatedPuppies = await this.puppiesModel
-      .findByIdAndUpdate(id, dto, { new: true })
+  async update(
+    id: string,
+    dto: UpdatePuppiesDto,
+    files: Express.Multer.File[],
+  ): Promise<Puppies> {
+    const puppies = await this.findOne(id);
+
+    const updatedPuppies: any = {
+      mom: dto.mom,
+      dad: dto.dad,
+      breed: dto.breed,
+      description: dto.description,
+    };
+
+    const uploadsDir = '/data/uploads';
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+
+    const existingPuppies = puppies.puppies;
+
+    if (files && files.length > 0) {
+      // Main image
+      const mainImageFile = files.find(
+        (file) => file.originalname.includes('mainImage'),
+      );
+      if (mainImageFile) {
+        const uniqueFilename = this.generateFilename(mainImageFile.originalname, 'mainImage');
+        const filePath = path.join(uploadsDir, uniqueFilename);
+        fs.writeFileSync(filePath, mainImageFile.buffer);
+        updatedPuppies.image = uniqueFilename;
+      } else {
+        updatedPuppies.image = puppies.image;
+      }
+
+      // Puppy images
+      const puppiesArray: Puppy[] = dto.puppies.map((puppy, index) => {
+        const puppyImageFile = files.find(
+          (file) => file.originalname.includes(`puppyImage${index}`),
+        );
+        if (puppyImageFile) {
+          const uniqueFilename = this.generateFilename(puppyImageFile.originalname, `puppyImage${index}`);
+          const filePath = path.join(uploadsDir, uniqueFilename);
+          fs.writeFileSync(filePath, puppyImageFile.buffer);
+          return {
+            name: puppy.name,
+            born: puppy.born,
+            gender: puppy.gender,
+            image: uniqueFilename,
+          };
+        } else if (existingPuppies[index]) {
+          return {
+            name: puppy.name,
+            born: puppy.born,
+            gender: puppy.gender,
+            image: existingPuppies[index].image,
+          };
+        } else {
+          return {
+            name: puppy.name,
+            born: puppy.born,
+            gender: puppy.gender,
+            image: '', // Ensure image is defined
+          };
+        }
+      });
+
+      updatedPuppies.puppies = puppiesArray;
+    } else {
+      updatedPuppies.puppies = dto.puppies.map((puppy, index) => ({
+        ...puppy,
+        name: puppy.name || '',
+        born: puppy.born || new Date(),
+        gender: puppy.gender || '',
+        image: existingPuppies[index] ? existingPuppies[index].image : '', // Preserve existing images
+      }));
+    }
+
+    const result = await this.puppiesModel
+      .findByIdAndUpdate(id, updatedPuppies, { new: true })
       .exec();
-    if (!updatedPuppies) {
+
+    if (!result) {
       throw new HttpException('Puppies not found', HttpStatus.NOT_FOUND);
     }
-    return updatedPuppies;
+
+    return result;
   }
 
   async delete(id: string): Promise<void> {

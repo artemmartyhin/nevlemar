@@ -37,7 +37,7 @@ const Home: React.FC = () => {
             </p>
           </div>
           <div className="flex justify-center space-x-4">
-            <Link to="/males">
+            <Link to="https://www.facebook.com/lemar.cat">
               <ButtonL
                 style={{ marginLeft: "48px" }}
                 className="!absolute !left-[402px] !top-[358px]"
@@ -49,17 +49,18 @@ const Home: React.FC = () => {
                 backgroundColor="#00172d"
               />
             </Link>
-
-            <ButtonL
-              className="!absolute !left-[221px] !top-[358px]"
-              iconLeft={false}
-              iconOnly={false}
-              iconRight
-              text="About Us"
-              buttonType="outline"
-              backgroundColor="#00172d"
-              textColor="#00172d"
-            />
+            <Link to="/puppies">
+              <ButtonL
+                className="!absolute !left-[221px] !top-[358px]"
+                iconLeft={false}
+                iconOnly={false}
+                iconRight
+                text="Our Puppies"
+                buttonType="outline"
+                backgroundColor="#00172d"
+                textColor="#00172d"
+              />
+            </Link>
           </div>
         </div>
       </div>

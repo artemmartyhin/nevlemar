@@ -6,7 +6,8 @@ import Header from './components/Header/Header';
 import Home from './pages/Home/Home';
 import Dog from './pages/Dog/Dog';
 import DogProfile from './components/DogProfile/DogProfile';
-import Puppies from './pages/Puppies/Puppies';
+import Puppy from './pages/Puppy/Puppy';
+import PuppyProfile from './components/PuppyProfile/PuppyProfile';
 import Admin from './pages/Admin/Admin';
 
 function App() {
@@ -18,9 +19,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/poms" element={<Dog breed="pom" />} />
           <Route path="/cvergs" element={<Dog breed="cvergsnaucer" />} />
-          <Route path="/puppies" element={<Puppies />} />
+          <Route path="/puppies" element={<Puppy />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/dog/:id" element={<DogProfile />} />
+          <Route path="/pups/:id" element={<PuppyProfile />} />
         </Routes>
       </Router>
     </AuthProvider>

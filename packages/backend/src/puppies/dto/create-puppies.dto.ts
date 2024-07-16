@@ -1,33 +1,40 @@
 import { IsNotEmpty, IsString, IsDate, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 export class CreatePuppiesDto {
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreatePuppyDto)
   puppies: CreatePuppyDto[];
 
   @IsString()
-  mom: string;
+  @IsOptional()
+  mom?: string;
 
   @IsString()
-  dad: string;
+  @IsOptional()
+  dad?: string;
 
+  @IsString()
   @IsNotEmpty()
-  @IsString()
   breed: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
 }
 
-
 export class CreatePuppyDto {
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   name: string;
 
-  @IsNotEmpty()
-  @IsDate()
+  @IsOptional()
   born: Date;
 
   @IsString()
-  gender: string;
-
-  @IsString()
-  image: string;
+  @IsOptional()
+  gender?: string;
 }

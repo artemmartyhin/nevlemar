@@ -10,7 +10,7 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { PuppiesService } from './puppies.service';
 import { FindPuppiesDto } from './dto/find-puppies.dto';
 import { CreatePuppiesDto } from './dto/create-puppies.dto';
@@ -46,8 +46,9 @@ export class PuppiesController {
 
   @Patch(':id')
   @UseGuards(AdminGuard)
-  async update(@Param('id') id: string, @Body() dto: UpdatePuppiesDto) {
-    return await this.puppiesService.update(id, dto);
+  @UseInterceptors(FilesInterceptor('files', 20, { storage: multer.memoryStorage() }))
+  async update(@Param('id') id: string, @UploadedFiles() files, @Body() dto: UpdatePuppiesDto) {
+    return await this.puppiesService.update(id, dto, files);
   }
 
   @Delete(':id')

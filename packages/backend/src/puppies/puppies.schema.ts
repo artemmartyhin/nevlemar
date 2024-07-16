@@ -39,6 +39,10 @@ export class Puppies extends mongoose.Document {
   breed: string;
 
   @Prop()
+  @IsString()
+  description: string;
+
+  @Prop()
   @IsNotEmpty()
   @IsString()
   image: string;

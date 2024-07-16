@@ -63,6 +63,7 @@ const Dog: React.FC<Props> = (props) => {
                 breed={dog.breed}
                 age={String(dog.born)}
                 gender={dog.gender}
+                sx= {{height: "360px"}}
               />
             </div>
           )
