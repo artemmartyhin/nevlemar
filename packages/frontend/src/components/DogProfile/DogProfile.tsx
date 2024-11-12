@@ -4,7 +4,9 @@ import { Container, Paper, Typography, Box, Grid } from "@mui/material";
 import { useFetchDog, fetchDog, Dog } from "../../hooks/use.fetchDogs";
 import { ProductCard } from "../../props/ProductCard";
 import Lightbox from "react-image-lightbox";
-import 'react-image-lightbox/style.css';
+import { ButtonL } from "../../props/ButtonL";
+import { Link } from "react-router-dom";
+import "react-image-lightbox/style.css";
 
 const DogProfile: React.FC = () => {
   const { id } = useParams();
@@ -141,6 +143,20 @@ const DogProfile: React.FC = () => {
               <strong>Description:</strong>{" "}
               {dog.description || "No description available for this dog."}
             </Typography>
+            <Link
+              to="/aboutus"
+              style={{ display: "inline-block", marginTop: "20px" }}
+            >
+              <ButtonL
+                iconLeft={false}
+                iconOnly={false}
+                iconRight
+                text="Get In Touch"
+                buttonType="outline"
+                backgroundColor="#00172d"
+                textColor="#00172d"
+              />
+            </Link>
           </Box>
         </Paper>
 

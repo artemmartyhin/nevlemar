@@ -11,7 +11,9 @@ import { PuppiesSchema } from './puppies/puppies.schema';
 import { PuppySchema } from './puppies/puppies.schema';
 import { PuppiesService } from './puppies/puppies.service';
 import { PuppiesController } from './puppies/puppies.controller';
-
+import { BannerService } from './banner/banner.service';
+import { BannerController } from './banner/banner.controller';
+import { BannerSchema } from './banner/banner.schema';
 @Module({
   
   imports: [
@@ -21,6 +23,7 @@ import { PuppiesController } from './puppies/puppies.controller';
     MongooseModule.forFeature([{ name: 'Dog', schema: DogSchema }]),
     MongooseModule.forFeature([{ name: 'Puppies', schema: PuppiesSchema }]),
     MongooseModule.forFeature([{ name: 'Puppy', schema: PuppySchema }]),
+    MongooseModule.forFeature([{ name: 'Banner', schema: BannerSchema }]),
     AuthModule,
     UserModule,
     ServeStaticModule.forRoot({
@@ -29,8 +32,8 @@ import { PuppiesController } from './puppies/puppies.controller';
 
     })
   ],
-  controllers: [DogController, PuppiesController],
-  providers: [DogService, PuppiesService],
+  controllers: [DogController, PuppiesController, BannerController],
+  providers: [DogService, PuppiesService, BannerService],
 })
 
 
