@@ -23,7 +23,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const { name, emails, photos } = profile;
 
     const role =
-      emails[0].value === 'artemmartyhin@gmail.com' ? 'admin' : 'user';
+      (emails[0].value === 'artemmartyhin@gmail.com' || emails[0].value === 'nevlemar@gmail.com') ? 'admin' : 'user';
 
     const user = {
       email: emails[0].value,

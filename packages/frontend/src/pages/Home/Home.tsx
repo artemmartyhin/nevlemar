@@ -37,7 +37,7 @@ const Home: React.FC = () => {
             </p>
           </div>
           <div className="flex justify-center space-x-4">
-            <Link to="https://www.facebook.com/lemar.cat">
+            <Link to="https://www.facebook.com/nevlemar">
               <ButtonL
                 style={{ marginLeft: "48px" }}
                 className="!absolute !left-[402px] !top-[358px]"

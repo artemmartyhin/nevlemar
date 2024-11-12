@@ -10,6 +10,8 @@ import "swiper/css/pagination";
 import { Navigation, Pagination } from "swiper/modules";
 import { ProductCard } from "../../props/ProductCard";
 import { styled } from "@mui/material/styles";
+import { ButtonL } from "../../props/ButtonL";
+import { Link } from "react-router-dom";
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
 
@@ -245,6 +247,20 @@ const PuppiesProfile: React.FC = () => {
                 </Typography>
               </>
             )}
+            <Link
+              to="/aboutus"
+              style={{ display: "inline-block", marginTop: "20px" }}
+            >
+              <ButtonL
+                iconLeft={false}
+                iconOnly={false}
+                iconRight
+                text="Get In Touch"
+                buttonType="outline"
+                backgroundColor="#00172d"
+                textColor="#00172d"
+              />
+            </Link>
           </Box>
         </Paper>
         <Paper

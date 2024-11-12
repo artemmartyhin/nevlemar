@@ -9,6 +9,7 @@ import DogProfile from './components/DogProfile/DogProfile';
 import Puppy from './pages/Puppy/Puppy';
 import PuppyProfile from './components/PuppyProfile/PuppyProfile';
 import Admin from './pages/Admin/Admin';
+import About from './pages/About/About';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/dog/:id" element={<DogProfile />} />
           <Route path="/pups/:id" element={<PuppyProfile />} />
+          <Route path="/aboutus" element={<About />} />
         </Routes>
       </Router>
     </AuthProvider>

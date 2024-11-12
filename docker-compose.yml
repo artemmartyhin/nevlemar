@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-
   mongodb:
     image: mongo:7.0
     environment:
@@ -11,6 +10,8 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - web
 
   backend:
     build: ./packages/backend
@@ -25,13 +26,22 @@ services:
       - "3001:3001"
     volumes:
       - image-data:/data/uploads
+    networks:
+      - web
+
   frontend:
     build: ./packages/frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
-      
+    networks:
+      - web
+
 volumes:
   mongo-data:
   image-data:
+  certs:
+
+networks:
+  web:

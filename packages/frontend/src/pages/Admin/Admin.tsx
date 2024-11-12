@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import DogsManager from "./DogsManager";
 import PuppiesManager from "./PuppiesManager";
+import BannerManager from "./BannerManager";
 
 const Admin: React.FC = () => {
   const [panel, setPanel] = useState("dogs");
@@ -30,13 +31,22 @@ const Admin: React.FC = () => {
                 >
                   <option value="dogs">Dogs Manager</option>
                   <option value="breeds">Puppies Manager</option>
+                  <option value="banner">Banner Manager</option>
                 </select>
               </div>
             </div>
           </div>
         </div>
       </div>
-      {panel === "dogs" ? <DogsManager /> : <PuppiesManager />}
+      {
+        panel === "dogs" && <DogsManager />
+      }
+      {
+        panel === "breeds" && <PuppiesManager />
+      }
+      {
+        panel === "banner" && <BannerManager />
+      }
     </div>
   );
 };
