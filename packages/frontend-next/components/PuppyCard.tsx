@@ -15,11 +15,13 @@ export default function PuppyCard({ litter }: { litter: PuppiesLitter }) {
         />
       </div>
       <div className="p-4">
-        <div className="font-display font-bold text-nv-dark text-lg uppercase">{litter.breed}</div>
-        <div className="text-sm text-nv-text mt-2">
-          {litter.mom && <span>♀ {litter.mom}</span>} {litter.dad && <span>· ♂ {litter.dad}</span>}
+        <div className="font-display font-bold text-nv-dark text-lg tracking-tight">
+          {litter.name || litter.breed.toUpperCase()}
         </div>
-        <div className="text-sm text-nv-text mt-1">{litter.puppies?.length ?? 0} puppies</div>
+        <div className="text-[11px] text-nv-text mt-1 uppercase tracking-wider">{litter.breed}</div>
+        <div className="text-sm text-nv-text mt-2">
+          {litter.puppies?.length ?? 0} puppies
+        </div>
       </div>
     </Link>
   );

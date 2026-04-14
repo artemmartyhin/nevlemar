@@ -79,6 +79,9 @@ export class BlogCategory extends mongoose.Document {
 
   @Prop({ default: 0 })
   order: number;
+
+  @Prop({ type: mongoose.Schema.Types.Mixed, default: {} })
+  translations: any;
 }
 
 export const BlogCategorySchema = SchemaFactory.createForClass(BlogCategory);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { api, PuppiesLitter, uploadUrl } from '@/lib/api';
+import { api, PuppiesLitter, Dog, uploadUrl } from '@/lib/api';
 import SeoFields from './SeoFields';
 import ImagePicker from './ImagePicker';
 import { useToast } from '@/components/ui/Toast';
@@ -10,13 +10,15 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 const inputCls = 'w-full px-4 py-2.5 rounded-xl border border-nv-cream bg-white focus:outline-none focus:border-nv-dark focus:ring-2 focus:ring-nv-cream/50 transition';
 const textareaCls = `${inputCls} min-h-[80px] resize-y`;
 
-type PuppyRow = { name: string; born: string; gender: string; imageUrl?: string };
+type PuppyRow = { name: string; gender: string; imageUrl?: string };
 
 const emptyForm = () => ({
   _id: '',
+  name: '',
   breed: 'pom',
   mom: '',
   dad: '',
+  born: new Date().toISOString().slice(0, 10),
   description: '',
   metaTitle: '',
   metaDescription: '',
@@ -28,6 +30,7 @@ export default function PuppiesManager() {
   const toast = useToast();
   const confirm = useConfirm();
   const [litters, setLitters] = useState<PuppiesLitter[]>([]);
+  const [dogs, setDogs] = useState<Dog[]>([]);
   const [form, setForm] = useState<any>(emptyForm());
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -35,8 +38,9 @@ export default function PuppiesManager() {
 
   const load = async () => {
     try {
-      const r = await api.get('/puppies');
-      setLitters(r.data || []);
+      const [litterRes, dogsRes] = await Promise.all([api.get('/puppies'), api.get('/dogs')]);
+      setLitters(litterRes.data || []);
+      setDogs(dogsRes.data || []);
     } catch {
       toast.error('Не вдалося завантажити');
     }
@@ -46,7 +50,7 @@ export default function PuppiesManager() {
   const addPuppy = () =>
     setForm({
       ...form,
-      puppies: [...form.puppies, { name: '', born: new Date().toISOString().slice(0, 10), gender: 'male', imageUrl: '' }],
+      puppies: [...form.puppies, { name: '', gender: 'male', imageUrl: '' }],
     });
 
   const updatePuppy = (i: number, patch: Partial<PuppyRow>) => {
@@ -59,18 +63,26 @@ export default function PuppiesManager() {
 
   const edit = (l: PuppiesLitter) => {
     setEditing(l._id);
+    // Extract birth date from first puppy that has it
+    const firstBorn = (l.puppies || []).find((p) => (p as any).born)?.born as any;
+    const bornStr = firstBorn
+      ? typeof firstBorn === 'string'
+        ? firstBorn.slice(0, 10)
+        : new Date(firstBorn).toISOString().slice(0, 10)
+      : new Date().toISOString().slice(0, 10);
     setForm({
       _id: l._id,
+      name: l.name || '',
       breed: l.breed,
       mom: l.mom || '',
       dad: l.dad || '',
+      born: bornStr,
       description: l.description || '',
       metaTitle: l.metaTitle || '',
       metaDescription: l.metaDescription || '',
       imageUrl: l.image ? uploadUrl(l.image) : '',
       puppies: (l.puppies || []).map((p) => ({
         name: p.name,
-        born: (p as any).born?.slice ? (p as any).born.slice(0, 10) : new Date().toISOString().slice(0, 10),
         gender: p.gender || 'male',
         imageUrl: p.image ? uploadUrl(p.image) : '',
       })),
@@ -83,6 +95,7 @@ export default function PuppiesManager() {
     e.preventDefault();
     setSaving(true);
     const payload: any = {
+      name: form.name,
       breed: form.breed,
       mom: form.mom,
       dad: form.dad,
@@ -92,7 +105,7 @@ export default function PuppiesManager() {
       imageUrl: form.imageUrl,
       puppies: form.puppies.map((p: PuppyRow) => ({
         name: p.name,
-        born: p.born,
+        born: form.born, // shared date across the litter
         gender: p.gender,
         imageUrl: p.imageUrl || '',
       })),
@@ -150,6 +163,32 @@ export default function PuppiesManager() {
             onChange={(url) => setForm({ ...form, imageUrl: url })}
           />
 
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">
+                Назва помету
+              </label>
+              <input
+                className={inputCls}
+                placeholder="Aurora × Mars · Лютий 2026"
+                value={form.name || ''}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">
+                Дата народження
+              </label>
+              <input
+                type="date"
+                className={inputCls}
+                value={form.born}
+                onChange={(e) => setForm({ ...form, born: e.target.value })}
+                required
+              />
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Порода</label>
@@ -159,12 +198,38 @@ export default function PuppiesManager() {
               </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Мама</label>
-              <input className={inputCls} value={form.mom} onChange={(e) => setForm({ ...form, mom: e.target.value })} />
+              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Мама (♀)</label>
+              <select
+                className={inputCls}
+                value={form.mom || ''}
+                onChange={(e) => setForm({ ...form, mom: e.target.value })}
+              >
+                <option value="">— Немає —</option>
+                {dogs
+                  .filter((d) => !d.gender && d.breed === form.breed)
+                  .map((d) => (
+                    <option key={d._id} value={d._id}>
+                      {d.name} · {new Date(d.born).getFullYear()}
+                    </option>
+                  ))}
+              </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Тато</label>
-              <input className={inputCls} value={form.dad} onChange={(e) => setForm({ ...form, dad: e.target.value })} />
+              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Тато (♂)</label>
+              <select
+                className={inputCls}
+                value={form.dad || ''}
+                onChange={(e) => setForm({ ...form, dad: e.target.value })}
+              >
+                <option value="">— Немає —</option>
+                {dogs
+                  .filter((d) => d.gender && d.breed === form.breed)
+                  .map((d) => (
+                    <option key={d._id} value={d._id}>
+                      {d.name} · {new Date(d.born).getFullYear()}
+                    </option>
+                  ))}
+              </select>
             </div>
           </div>
 
@@ -190,13 +255,10 @@ export default function PuppiesManager() {
                   </div>
                   <ImagePicker aspect="square" value={p.imageUrl} onChange={(url) => updatePuppy(i, { imageUrl: url })} />
                   <input placeholder="Ім'я" value={p.name} onChange={(e) => updatePuppy(i, { name: e.target.value })} className={inputCls} />
-                  <div className="grid grid-cols-2 gap-2">
-                    <input type="date" value={p.born} onChange={(e) => updatePuppy(i, { born: e.target.value })} className={inputCls} />
-                    <select value={p.gender} onChange={(e) => updatePuppy(i, { gender: e.target.value })} className={inputCls}>
-                      <option value="male">♂ Кобель</option>
-                      <option value="female">♀ Сука</option>
-                    </select>
-                  </div>
+                  <select value={p.gender} onChange={(e) => updatePuppy(i, { gender: e.target.value })} className={inputCls}>
+                    <option value="male">♂ Кобель</option>
+                    <option value="female">♀ Сука</option>
+                  </select>
                 </div>
               ))}
             </div>
@@ -223,12 +285,23 @@ export default function PuppiesManager() {
           <div className="text-center py-12 text-nv-text">Немає пометів.</div>
         ) : (
           <div className="grid md:grid-cols-2 gap-4">
-            {litters.map((l) => (
+            {litters.map((l) => {
+              const momDog = dogs.find((d) => d._id === l.mom);
+              const dadDog = dogs.find((d) => d._id === l.dad);
+              return (
               <div key={l._id} className="group rounded-2xl bg-white border border-nv-cream/60 p-4 flex gap-4 hover:shadow-md transition">
                 <img src={uploadUrl(l.image)} alt={l.breed} className="w-24 h-24 object-cover rounded-xl shrink-0 bg-nv-cream/30" />
                 <div className="flex-1 min-w-0">
-                  <div className="font-display font-semibold text-nv-dark uppercase tracking-tight">{l.breed}</div>
-                  <div className="text-xs text-nv-text mt-1 truncate">♀ {l.mom} · ♂ {l.dad}</div>
+                  <div className="font-display font-semibold text-nv-dark tracking-tight truncate">
+                    {l.name || l.breed.toUpperCase()}
+                  </div>
+                  <div className="text-[11px] text-nv-text mt-0.5 uppercase tracking-wider">{l.breed}</div>
+                  <div className="text-xs text-nv-text mt-1 truncate">
+                    {momDog && <>♀ {momDog.name}</>}
+                    {momDog && dadDog && ' · '}
+                    {dadDog && <>♂ {dadDog.name}</>}
+                    {!momDog && !dadDog && '—'}
+                  </div>
                   <div className="text-xs text-nv-text">{l.puppies?.length || 0} щенят</div>
                   <div className="mt-2 flex gap-2">
                     <button onClick={() => edit(l)} className="text-xs rounded-full border border-nv-dark/20 px-3 py-1 hover:bg-nv-cream/30 font-medium">✎ Редагувати</button>
@@ -236,7 +309,8 @@ export default function PuppiesManager() {
                   </div>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>

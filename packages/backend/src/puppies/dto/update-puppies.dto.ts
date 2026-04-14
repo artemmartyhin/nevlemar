@@ -19,6 +19,10 @@ export class UpdatePuppyDto {
 }
 
 export class UpdatePuppiesDto {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => UpdatePuppyDto)

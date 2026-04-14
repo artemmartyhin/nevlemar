@@ -15,7 +15,11 @@ export const api = axios.create({
 export function uploadUrl(filename?: string) {
   if (!filename) return '/main.png';
   if (filename.startsWith('http')) return filename;
-  return `${API}/uploads/${filename}`;
+  // Already an absolute path (static asset like /main.png or /uploads/xxx) —
+  // let the browser fetch it directly via nginx routing
+  if (filename.startsWith('/')) return filename;
+  // Legacy bare filename — prepend /uploads/
+  return `/uploads/${filename}`;
 }
 
 export type Dog = {
@@ -41,6 +45,7 @@ export type PuppyItem = {
 
 export type PuppiesLitter = {
   _id: string;
+  name?: string;
   puppies: PuppyItem[];
   mom?: string;
   dad?: string;

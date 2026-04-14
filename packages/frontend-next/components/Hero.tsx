@@ -34,7 +34,7 @@ export default function Hero({ content }: { content: HeroContent }) {
     <section className="relative pt-4 md:pt-8 px-4 md:px-8">
       <div
         ref={ref}
-        className="relative mx-auto max-w-[1480px] h-[600px] md:h-[760px] rounded-[28px] md:rounded-[40px] overflow-hidden"
+        className="relative mx-auto max-w-[1480px] h-[560px] md:h-[760px] rounded-[24px] md:rounded-[40px] overflow-hidden"
         style={{ background: 'linear-gradient(160deg, #fbeed5 0%, #f7dba7 55%, #ffe7ba 100%)' }}
       >
         {/* Animated shapes */}
@@ -107,7 +107,7 @@ export default function Hero({ content }: { content: HeroContent }) {
         {/* DOG — clipped by rounded bottom */}
         <motion.div
           style={{ x: dogX, y: dogY }}
-          className="absolute right-[-8%] md:right-[2%] bottom-[-50%] md:bottom-[-56%] w-[100%] md:w-[68%] h-[125%] md:h-[150%] pointer-events-none"
+          className="absolute right-[-30%] md:right-[2%] bottom-[-20%] md:bottom-[-56%] w-[85%] md:w-[68%] h-[95%] md:h-[150%] pointer-events-none"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 40 }}
@@ -128,7 +128,7 @@ export default function Hero({ content }: { content: HeroContent }) {
         </motion.div>
 
         {/* TEXT */}
-        <div className="relative z-20 h-full flex flex-col justify-center pl-6 md:pl-16 pr-4 md:pr-16 max-w-xl md:max-w-2xl">
+        <div className="relative z-20 h-full flex flex-col justify-center pl-5 md:pl-16 pr-4 md:pr-16 max-w-[72%] md:max-w-2xl">
           {content.badge && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -141,7 +141,7 @@ export default function Hero({ content }: { content: HeroContent }) {
             </motion.div>
           )}
 
-          <h1 className="mt-5 font-display font-semibold text-nv-dark leading-[0.9] tracking-[-0.065em] text-[56px] md:text-[120px]">
+          <h1 className="mt-4 md:mt-5 font-display font-semibold text-nv-dark leading-[0.9] tracking-[-0.065em] text-[44px] sm:text-[56px] md:text-[120px]">
             <motion.span
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -155,7 +155,7 @@ export default function Hero({ content }: { content: HeroContent }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.25 }}
-                className="block text-[18px] md:text-[24px] font-normal tracking-tight text-nv-dark/65 mt-4"
+                className="block text-[14px] md:text-[24px] font-normal tracking-tight text-nv-dark/65 mt-2 md:mt-4 leading-snug"
               >
                 {content.sub}
               </motion.span>
@@ -167,7 +167,7 @@ export default function Hero({ content }: { content: HeroContent }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="mt-5 max-w-md text-nv-dark/80 text-sm md:text-base leading-6"
+              className="mt-4 md:mt-5 max-w-md text-nv-dark/80 text-[13px] md:text-base leading-5 md:leading-6 hidden sm:block"
             >
               {content.tagline}
             </motion.p>
@@ -177,13 +177,13 @@ export default function Hero({ content }: { content: HeroContent }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.45 }}
-            className="mt-7 flex flex-wrap gap-3"
+            className="mt-5 md:mt-7 flex flex-wrap gap-2 md:gap-3"
           >
             {content.ctaPrimaryLabel && (
               isExternal(content.ctaPrimaryHref) ? (
                 <a
                   href={content.ctaPrimaryHref}
-                  className="group relative inline-flex items-center gap-2 rounded-full bg-nv-dark text-nv-cream font-semibold px-6 py-3 overflow-hidden hover:shadow-2xl transition-shadow"
+                  className="group relative inline-flex items-center gap-2 rounded-full bg-nv-dark text-nv-cream font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm md:text-base overflow-hidden hover:shadow-2xl transition-shadow"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-nv-dark via-[#0a2540] to-nv-dark translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
                   <span className="relative">{content.ctaPrimaryLabel}</span>
@@ -192,7 +192,7 @@ export default function Hero({ content }: { content: HeroContent }) {
               ) : (
                 <Link
                   href={(content.ctaPrimaryHref || '/puppies') as any}
-                  className="group relative inline-flex items-center gap-2 rounded-full bg-nv-dark text-nv-cream font-semibold px-6 py-3 overflow-hidden hover:shadow-2xl transition-shadow"
+                  className="group relative inline-flex items-center gap-2 rounded-full bg-nv-dark text-nv-cream font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm md:text-base overflow-hidden hover:shadow-2xl transition-shadow"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-nv-dark via-[#0a2540] to-nv-dark translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500" />
                   <span className="relative">{content.ctaPrimaryLabel}</span>
@@ -206,14 +206,14 @@ export default function Hero({ content }: { content: HeroContent }) {
                   href={content.ctaSecondaryHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur border-2 border-nv-dark text-nv-dark font-semibold px-6 py-3 hover:bg-nv-dark hover:text-nv-cream transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur border-2 border-nv-dark text-nv-dark font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm md:text-base hover:bg-nv-dark hover:text-nv-cream transition"
                 >
                   {content.ctaSecondaryLabel}
                 </a>
               ) : (
                 <Link
                   href={(content.ctaSecondaryHref || '/aboutus') as any}
-                  className="inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur border-2 border-nv-dark text-nv-dark font-semibold px-6 py-3 hover:bg-nv-dark hover:text-nv-cream transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-white/70 backdrop-blur border-2 border-nv-dark text-nv-dark font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm md:text-base hover:bg-nv-dark hover:text-nv-cream transition"
                 >
                   {content.ctaSecondaryLabel}
                 </Link>
@@ -226,7 +226,7 @@ export default function Hero({ content }: { content: HeroContent }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="mt-8 flex items-center gap-5 text-nv-dark/80"
+              className="mt-6 md:mt-8 flex items-center gap-3 md:gap-5 text-nv-dark/80 hidden sm:flex"
             >
               {content.miniStats.map((s, i) => (
                 <div key={i} className="flex items-center gap-5">

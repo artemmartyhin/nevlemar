@@ -55,14 +55,19 @@ export default async function BlogPostPage({ params: { slug, locale } }: { param
     <div>
       <ReadingProgress />
 
-      {/* Parallax cover */}
-      <section className="relative h-[56vh] md:h-[70vh] overflow-hidden bg-nv-dark">
-        <div
-          className="absolute inset-0 bg-cover bg-center scale-110 will-change-transform"
-          style={{ backgroundImage: `url(${cover})`, filter: 'brightness(0.55)' }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-nv-dark via-nv-dark/60 to-transparent" />
-        <div className="relative h-full max-w-5xl mx-auto px-6 md:px-10 flex flex-col justify-end pb-12 md:pb-16 text-nv-cream">
+      {/* Parallax cover — content flows naturally, never clips */}
+      <section className="relative bg-nv-dark text-nv-cream">
+        {/* Background image layer (absolute, behind content) */}
+        <div aria-hidden className="absolute inset-0 overflow-hidden">
+          <div
+            className="absolute inset-0 bg-cover bg-center scale-110 will-change-transform"
+            style={{ backgroundImage: `url(${cover})`, filter: 'brightness(0.55)' }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-nv-dark via-nv-dark/60 to-transparent" />
+        </div>
+
+        {/* Content — grows with its content on mobile */}
+        <div className="relative max-w-5xl mx-auto px-5 md:px-10 pt-6 md:pt-24 pb-10 md:pb-16 min-h-[420px] md:min-h-[70vh] flex flex-col justify-end gap-3 md:gap-4">
           <Breadcrumbs
             items={[
               { label: 'Home', href: '/' },
@@ -71,25 +76,29 @@ export default async function BlogPostPage({ params: { slug, locale } }: { param
             ]}
             variant="dark"
           />
-          <div className="mt-4 flex items-center gap-3">
-            <span className="px-3 py-1 rounded-full bg-nv-yellow text-nv-dark text-xs font-bold uppercase tracking-widest">
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="px-3 py-1 rounded-full bg-nv-yellow text-nv-dark text-[10px] md:text-xs font-bold uppercase tracking-widest">
               {post.category}
             </span>
-            {post.featured && <span className="text-nv-yellow text-sm">★ Featured</span>}
+            {post.featured && <span className="text-nv-yellow text-xs md:text-sm">★ Featured</span>}
           </div>
-          <h1 className="font-display font-bold text-[36px] md:text-[64px] leading-[1.05] mt-4 max-w-4xl">
+          <h1 className="font-display font-bold text-[28px] sm:text-[36px] md:text-[64px] leading-[1.05] tracking-[-0.025em] max-w-4xl">
             {post.title}
           </h1>
-          {post.excerpt && <p className="mt-4 text-lg opacity-90 max-w-2xl">{post.excerpt}</p>}
-          <div className="mt-6 flex flex-wrap items-center gap-6 text-sm opacity-90">
+          {post.excerpt && (
+            <p className="text-sm md:text-lg opacity-90 max-w-2xl leading-snug md:leading-normal">
+              {post.excerpt}
+            </p>
+          )}
+          <div className="mt-2 md:mt-4 flex flex-wrap items-center gap-3 md:gap-6 text-[11px] md:text-sm opacity-90">
             <span className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-nv-cream text-nv-dark flex items-center justify-center font-bold">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-nv-cream text-nv-dark flex items-center justify-center font-bold text-xs md:text-sm">
                 {post.author?.charAt(0) || 'N'}
               </div>
               {post.author || 'Nevlemar'}
             </span>
             <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-            <span>📖 {post.readingTime || 3} хв читання</span>
+            <span>📖 {post.readingTime || 3} хв</span>
             <span>👁 {post.views || 0}</span>
           </div>
         </div>

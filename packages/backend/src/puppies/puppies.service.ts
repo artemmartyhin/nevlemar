@@ -26,6 +26,7 @@ export class PuppiesService {
 
   async create(dto: CreatePuppiesDto): Promise<Puppies> {
     const newPuppies = new this.puppiesModel({
+      name: dto.name,
       mom: dto.mom,
       dad: dto.dad,
       breed: dto.breed,
@@ -45,6 +46,7 @@ export class PuppiesService {
 
   async update(id: string, dto: UpdatePuppiesDto): Promise<Puppies> {
     const patch: any = {
+      name: dto.name,
       mom: dto.mom,
       dad: dto.dad,
       breed: dto.breed,

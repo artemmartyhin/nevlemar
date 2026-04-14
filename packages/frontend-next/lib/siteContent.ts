@@ -21,6 +21,7 @@ export type BreedCard = {
   description: string;
   href: string;
   image: string;
+  heroImage?: string;
   dark?: boolean;
 };
 
@@ -65,9 +66,16 @@ export type CtaSectionContent = {
   secondaryHref?: string;
 };
 
+export type PuppiesPageContent = {
+  heroImage?: string;
+  title?: string;
+  subtitle?: string;
+};
+
 export type AboutContent = {
   title?: string;
   intro?: string;
+  image?: string;
   followUsLabel?: string;
   contactTitle?: string;
   contactText?: string;
@@ -90,6 +98,7 @@ export type SiteContent = {
   championsSection: ChampionsSection;
   testimonialsSection: TestimonialsSection;
   ctaSection: CtaSectionContent;
+  puppiesPage: PuppiesPageContent;
   about: AboutContent;
   footer: FooterContent;
 };
@@ -107,6 +116,7 @@ export async function getSiteContent(locale?: string): Promise<SiteContent> {
       championsSection: {},
       testimonialsSection: {},
       ctaSection: {},
+      puppiesPage: {},
       about: {},
       footer: {},
     };

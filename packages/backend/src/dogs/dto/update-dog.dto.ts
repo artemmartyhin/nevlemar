@@ -1,4 +1,4 @@
-import { IsDate, IsOptional, IsString, IsNotEmpty, IsBoolean } from 'class-validator';
+import { IsDate, IsOptional, IsString, IsNotEmpty, IsBoolean, IsArray } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UpdateDogDto {
@@ -43,4 +43,9 @@ export class UpdateDogDto {
   @IsString()
   @IsOptional()
   readonly imageUrl?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  readonly imageUrls?: string[];
 }

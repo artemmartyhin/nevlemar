@@ -46,6 +46,9 @@ export class Dog extends mongoose.Document {
   @Prop()
   @IsOptional()
   metaDescription: string;
+
+  @Prop({ type: mongoose.Schema.Types.Mixed, default: {} })
+  translations: any;
 }
 
 export const DogSchema = SchemaFactory.createForClass(Dog);

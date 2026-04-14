@@ -69,6 +69,8 @@ const POSTS = [
   },
 ];
 
+import { TranslationService, TARGET_LOCALES } from '../i18n/translation.service';
+
 @Injectable()
 export class BlogSeedService implements OnModuleInit {
   private readonly logger = new Logger(BlogSeedService.name);
@@ -76,6 +78,7 @@ export class BlogSeedService implements OnModuleInit {
   constructor(
     @InjectModel('BlogPost') private readonly post: Model<BlogPost>,
     @InjectModel('BlogCategory') private readonly category: Model<BlogCategory>,
+    private readonly translator: TranslationService,
   ) {}
 
   async onModuleInit() {
@@ -98,6 +101,25 @@ export class BlogSeedService implements OnModuleInit {
         }
         this.logger.log(`Seeded ${POSTS.length} blog posts`);
       }
+
+      // Self-heal: any category without translations — translate in background
+      this.translator.enqueue(async () => {
+        const cats = await this.category.find({ $or: [{ translations: { $exists: false } }, { translations: {} }] }).exec();
+        for (const c of cats) {
+          try {
+            const source: any = { name: c.name || '', description: c.description || '' };
+            const translations: any = {};
+            for (const loc of TARGET_LOCALES) {
+              translations[loc] = await this.translator.translateObject(source, loc);
+              await new Promise((r) => setTimeout(r, 200));
+            }
+            (c as any).translations = translations;
+            c.markModified('translations');
+            await c.save();
+          } catch {}
+        }
+        if (cats.length > 0) this.logger.log(`Self-healed translations for ${cats.length} categories`);
+      });
     } catch (e: any) {
       this.logger.warn(`Blog seed skipped: ${e.message}`);
     }

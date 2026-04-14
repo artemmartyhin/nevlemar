@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import type { BlogCategory } from '@/lib/api';
 
 export default function BlogFilters({
@@ -17,10 +18,11 @@ export default function BlogFilters({
   search: string;
   onSearchChange: (s: string) => void;
 }) {
+  const t = useTranslations('blog');
   return (
     <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between">
       <div className="flex flex-wrap gap-2">
-        <Chip active={active === 'all'} onClick={() => onChange('all')}>Всі</Chip>
+        <Chip active={active === 'all'} onClick={() => onChange('all')}>{t('allCategories')}</Chip>
         {categories.map((c) => (
           <Chip key={c.slug} active={active === c.slug} onClick={() => onChange(c.slug)}>
             {c.name}
@@ -35,7 +37,7 @@ export default function BlogFilters({
         <input
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Пошук..."
+          placeholder={`${t('search' as any) || 'Пошук'}...`}
           className="w-full pl-10 pr-4 py-2.5 rounded-full border border-nv-dark/20 font-display focus:outline-none focus:border-nv-dark transition"
         />
       </div>

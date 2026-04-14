@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api, Dog, uploadUrl } from '@/lib/api';
 import SeoFields from './SeoFields';
 import ImagePicker from './ImagePicker';
+import MultiImagePicker from './MultiImagePicker';
 import { useToast } from '@/components/ui/Toast';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 
@@ -18,7 +19,7 @@ const empty = {
   dad: '',
   metaTitle: '',
   metaDescription: '',
-  imageUrl: '',
+  imageUrls: [] as string[],
 } as any;
 
 const inputCls = 'w-full px-4 py-2.5 rounded-xl border border-nv-cream bg-white focus:outline-none focus:border-nv-dark focus:ring-2 focus:ring-nv-cream/50 transition';
@@ -58,10 +59,13 @@ export default function DogsManager() {
       dad: form.dad,
       metaTitle: form.metaTitle,
       metaDescription: form.metaDescription,
-      imageUrl: form.imageUrl,
+      imageUrls: (form.imageUrls || []).filter((u: string) => !!u),
     };
-    // drop empty strings
-    Object.keys(payload).forEach((k) => (payload[k] === '' || payload[k] === undefined) && delete payload[k]);
+    // drop empty strings/undefined but always send imageUrls (empty array clears it)
+    Object.keys(payload).forEach((k) => {
+      if (k === 'imageUrls') return;
+      if (payload[k] === '' || payload[k] === undefined) delete payload[k];
+    });
     payload.gender = form.gender === 'true' || form.gender === true;
 
     try {
@@ -83,7 +87,9 @@ export default function DogsManager() {
       ...d,
       gender: String(d.gender),
       born: d.born?.slice(0, 10),
-      imageUrl: d.images?.[0] ? uploadUrl(d.images[0]) : '',
+      imageUrls: (d.images || []).map((img) =>
+        img?.startsWith('/') || img?.startsWith('http') ? img : `/uploads/${img}`,
+      ),
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -131,11 +137,10 @@ export default function DogsManager() {
             <button type="button" onClick={() => setShowForm(false)} className="text-nv-text hover:text-nv-dark">× Закрити</button>
           </div>
 
-          <ImagePicker
-            label="Фото"
-            aspect="square"
-            value={form.imageUrl}
-            onChange={(url) => setForm({ ...form, imageUrl: url })}
+          <MultiImagePicker
+            label="Фотографії собаки"
+            value={form.imageUrls || []}
+            onChange={(urls) => setForm({ ...form, imageUrls: urls })}
           />
 
           <div className="grid md:grid-cols-2 gap-4">
@@ -162,12 +167,38 @@ export default function DogsManager() {
               </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Мама</label>
-              <input className={inputCls} value={form.mom} onChange={(e) => setForm({ ...form, mom: e.target.value })} />
+              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Мама (♀)</label>
+              <select
+                className={inputCls}
+                value={form.mom || ''}
+                onChange={(e) => setForm({ ...form, mom: e.target.value })}
+              >
+                <option value="">— Немає —</option>
+                {dogs
+                  .filter((d) => !d.gender && d._id !== editing && d.breed === form.breed)
+                  .map((d) => (
+                    <option key={d._id} value={d._id}>
+                      {d.name} · {new Date(d.born).getFullYear()}
+                    </option>
+                  ))}
+              </select>
             </div>
             <div>
-              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Тато</label>
-              <input className={inputCls} value={form.dad} onChange={(e) => setForm({ ...form, dad: e.target.value })} />
+              <label className="block text-xs uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Тато (♂)</label>
+              <select
+                className={inputCls}
+                value={form.dad || ''}
+                onChange={(e) => setForm({ ...form, dad: e.target.value })}
+              >
+                <option value="">— Немає —</option>
+                {dogs
+                  .filter((d) => d.gender && d._id !== editing && d.breed === form.breed)
+                  .map((d) => (
+                    <option key={d._id} value={d._id}>
+                      {d.name} · {new Date(d.born).getFullYear()}
+                    </option>
+                  ))}
+              </select>
             </div>
           </div>
 

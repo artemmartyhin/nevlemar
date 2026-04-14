@@ -28,6 +28,9 @@ export class SiteContent extends mongoose.Document {
   ctaSection: any;
 
   @Prop({ type: mongoose.Schema.Types.Mixed, default: {} })
+  puppiesPage: any;
+
+  @Prop({ type: mongoose.Schema.Types.Mixed, default: {} })
   about: any;
 
   @Prop({ type: mongoose.Schema.Types.Mixed, default: {} })

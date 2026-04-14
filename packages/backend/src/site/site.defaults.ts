@@ -110,10 +110,16 @@ export const DEFAULT_SITE_CONTENT = {
     secondaryLabel: 'Написати нам',
     secondaryHref: 'mailto:nevlemar@gmail.com',
   },
+  puppiesPage: {
+    heroImage: '/main.png',
+    title: 'Наші цуценята',
+    subtitle: 'Знайомтеся з нашими малюками',
+  },
   about: {
     title: 'Про нас',
     intro:
       "Ласкаво просимо до Nevlemar! Наш розплідник присвячений розведенню та вихованню собак з любов'ю, турботою та увагою до якості й здоров'я. Маючи понад 20 років досвіду, ми прагнемо досконалості в родоводах, дресируванні та здоров'ї наших цуценят.",
+    image: '/main.png',
     followUsLabel: 'Слідкуйте за нами',
     contactTitle: "Зв'яжіться з нами",
     contactText: 'Напишіть або зателефонуйте — будемо раді відповісти на ваші запитання.',

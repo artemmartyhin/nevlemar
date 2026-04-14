@@ -26,9 +26,9 @@ export default function Header() {
 
   return (
     <header className="w-full bg-white border-b border-nv-cream/50">
-      <div className="max-w-7xl mx-auto px-6 md:px-10 py-3 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-10 py-3 flex items-center justify-between gap-3 md:gap-4">
         <Link href="/" className="shrink-0">
-          <Image src="/logo.png" alt="Nevlemar" width={220} height={55} priority className="object-contain h-auto" />
+          <Image src="/logo.png" alt="Nevlemar" width={220} height={55} priority className="object-contain h-auto w-[140px] md:w-[220px]" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-7 font-display font-bold text-nv-dark">
@@ -50,7 +50,7 @@ export default function Header() {
           )}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <LanguageSwitcher />
           {user ? (
             <span className="hidden md:inline font-display font-semibold text-nv-dark">
@@ -59,7 +59,7 @@ export default function Header() {
           ) : (
             <button
               onClick={login}
-              className="rounded-full bg-nv-dark text-nv-cream font-semibold px-5 py-2 hover:bg-black transition text-sm"
+              className="hidden sm:inline-flex rounded-full bg-nv-dark text-nv-cream font-semibold px-4 md:px-5 py-2 hover:bg-black transition text-sm"
             >
               {t('login')}
             </button>

@@ -147,7 +147,36 @@ export class BlogService {
     });
   }
   async createCategory(dto: CreateCategoryDto) {
-    return new this.category(dto).save();
+    const saved = await new this.category(dto).save();
+    this.translator.enqueue(() => this.translateCategory(saved._id as any));
+    return saved;
+  }
+
+  async translateCategory(id: any) {
+    const cat = await this.category.findById(id).exec();
+    if (!cat) return;
+    const source: any = { name: cat.name || '', description: cat.description || '' };
+    const translations: any = { ...((cat as any).translations || {}) };
+    for (const loc of TARGET_LOCALES) {
+      try {
+        translations[loc] = await this.translator.translateObject(source, loc);
+      } catch {}
+      await new Promise((r) => setTimeout(r, 200));
+    }
+    (cat as any).translations = translations;
+    cat.markModified('translations');
+    await cat.save();
+    this.logger.log(`Translated category "${cat.slug}" to ${TARGET_LOCALES.length} locales`);
+  }
+
+  async retranslateCategories() {
+    const cats = await this.category.find().exec();
+    for (const c of cats) {
+      try {
+        await this.translateCategory(c._id as any);
+      } catch {}
+    }
+    return { ok: true, count: cats.length };
   }
   async deleteCategory(id: string) {
     return this.category.findByIdAndDelete(id).exec();

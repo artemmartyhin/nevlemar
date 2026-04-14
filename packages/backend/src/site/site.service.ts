@@ -13,6 +13,7 @@ const TRANSLATABLE_SECTIONS = [
   'championsSection',
   'testimonialsSection',
   'ctaSection',
+  'puppiesPage',
   'about',
   'footer',
 ];
@@ -60,12 +61,27 @@ export class SiteService implements OnModuleInit {
     if (!current) {
       current = await new this.model({ key: 'default', ...DEFAULT_SITE_CONTENT }).save();
     }
+    const changedSections: string[] = [];
     TRANSLATABLE_SECTIONS.forEach((f) => {
       if (patch[f] !== undefined) {
         (current as any)[f] = patch[f];
         (current as any).markModified(f);
+        changedSections.push(f);
       }
     });
+    // Invalidate stale translations for changed sections — so /en/... falls back
+    // to source text immediately instead of showing the previous English value
+    // that no longer matches.
+    if (changedSections.length > 0) {
+      const translations: any = (current as any).translations || {};
+      for (const loc of Object.keys(translations)) {
+        for (const sec of changedSections) {
+          if (translations[loc]?.[sec] !== undefined) delete translations[loc][sec];
+        }
+      }
+      (current as any).translations = translations;
+      (current as any).markModified('translations');
+    }
     await current.save();
     // fire and forget background translation
     this.translator.enqueue(() => this.translateAll((current as any)._id));

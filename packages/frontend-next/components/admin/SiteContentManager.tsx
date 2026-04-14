@@ -14,6 +14,7 @@ import type {
   ChampionsSection,
   TestimonialsSection,
   CtaSectionContent,
+  PuppiesPageContent,
   AboutContent,
   FooterContent,
   BreedCard,
@@ -81,6 +82,7 @@ export default function SiteContentManager() {
     { id: 'champions', icon: '♛', title: 'Champions', sub: 'Зала слави' },
     { id: 'testimonials', icon: '❝', title: 'Testimonials', sub: 'Відгуки' },
     { id: 'cta', icon: '→', title: 'CTA', sub: 'Фінальний блок' },
+    { id: 'puppiesPage', icon: '♥', title: 'Puppies Page', sub: 'Сторінка цуценят' },
     { id: 'about', icon: 'ℹ', title: 'About', sub: 'Про нас' },
     { id: 'footer', icon: '▁', title: 'Footer', sub: 'Підвал' },
   ];
@@ -94,6 +96,7 @@ export default function SiteContentManager() {
       case 'champions': return <ChampionsEditor value={content.championsSection || {}} onSave={(v) => saveSection('championsSection', v)} onToast={toast} />;
       case 'testimonials': return <TestimonialsEditor value={content.testimonialsSection || {}} onSave={(v) => saveSection('testimonialsSection', v)} onToast={toast} />;
       case 'cta': return <CtaEditor value={content.ctaSection || {}} onSave={(v) => saveSection('ctaSection', v)} onToast={toast} />;
+      case 'puppiesPage': return <PuppiesPageEditor value={(content as any).puppiesPage || {}} onSave={(v) => saveSection('puppiesPage' as any, v)} onToast={toast} />;
       case 'about': return <AboutEditor value={content.about || {}} onSave={(v) => saveSection('about', v)} onToast={toast} />;
       case 'footer': return <FooterEditor value={content.footer || {}} onSave={(v) => saveSection('footer', v)} onToast={toast} />;
     }
@@ -301,7 +304,16 @@ function BreedsEditor({ value, onSave, onToast }: SaverProps<BreedsSection>) {
               <strong className="font-display text-nv-dark tracking-tight">Картка #{i + 1}</strong>
               <button onClick={() => setLocal({ ...local, cards: cards.filter((_, j) => j !== i) })} className="text-rose-500 text-sm hover:underline">Видалити</button>
             </div>
-            <ImagePicker aspect="portrait" value={c.image} onChange={(url) => updateCard(i, { image: url })} />
+            <div className="grid md:grid-cols-2 gap-3">
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Картка на головній</div>
+                <ImagePicker aspect="portrait" value={c.image} onChange={(url) => updateCard(i, { image: url })} />
+              </div>
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-nv-text mb-1.5 font-semibold">Шапка сторінки породи</div>
+                <ImagePicker aspect="portrait" value={(c as any).heroImage} onChange={(url) => updateCard(i, { heroImage: url } as any)} />
+              </div>
+            </div>
             <Field label="Title"><input className={inputCls} value={c.title} onChange={(e) => updateCard(i, { title: e.target.value })} /></Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Slug"><input className={inputCls} value={c.slug} onChange={(e) => updateCard(i, { slug: e.target.value })} /></Field>
@@ -430,11 +442,36 @@ function CtaEditor({ value, onSave, onToast }: SaverProps<CtaSectionContent>) {
   );
 }
 
+function PuppiesPageEditor({ value, onSave, onToast }: SaverProps<PuppiesPageContent>) {
+  const { local, setLocal, status, save } = useSaver(value, onSave, onToast);
+  return (
+    <>
+      <ImagePicker
+        label="Шапка сторінки цуценят"
+        aspect="portrait"
+        value={local.heroImage}
+        onChange={(url) => setLocal({ ...local, heroImage: url })}
+      />
+      <div className="grid md:grid-cols-2 gap-4">
+        <Field label="Title"><input className={inputCls} value={local.title || ''} onChange={(e) => setLocal({ ...local, title: e.target.value })} /></Field>
+        <Field label="Subtitle"><input className={inputCls} value={local.subtitle || ''} onChange={(e) => setLocal({ ...local, subtitle: e.target.value })} /></Field>
+      </div>
+      <SaveRow onSave={save} status={status} />
+    </>
+  );
+}
+
 function AboutEditor({ value, onSave, onToast }: SaverProps<AboutContent>) {
   const { local, setLocal, status, save } = useSaver(value, onSave, onToast);
   return (
     <>
       <Field label="Title"><input className={inputCls} value={local.title || ''} onChange={(e) => setLocal({ ...local, title: e.target.value })} /></Field>
+      <ImagePicker
+        label="Зображення на сторінці «Про нас»"
+        aspect="portrait"
+        value={local.image}
+        onChange={(url) => setLocal({ ...local, image: url })}
+      />
       <Field label="Intro"><textarea className={textareaCls} value={local.intro || ''} onChange={(e) => setLocal({ ...local, intro: e.target.value })} /></Field>
       <div className="grid md:grid-cols-2 gap-4">
         <Field label="Phone"><input className={inputCls} value={local.phone || ''} onChange={(e) => setLocal({ ...local, phone: e.target.value })} /></Field>
