@@ -3,21 +3,16 @@ import {
   Post,
   UseGuards,
   Body,
-  UseInterceptors,
-  UploadedFile,
   Get,
   Param,
   Patch,
   Delete,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { DogService } from './dog.service';
 import { FindDogDto } from './dto/find-dog.dto';
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
 import { AdminGuard } from 'src/auth/auth.admin';
-
-import * as multer from 'multer';
 
 @Controller('dogs')
 export class DogController {
@@ -25,11 +20,8 @@ export class DogController {
 
   @Post()
   @UseGuards(AdminGuard)
-  @UseInterceptors(
-    FileInterceptor('image', { storage: multer.memoryStorage() }),
-  )
-  async create(@UploadedFile() file, @Body() dto: CreateDogDto) {
-    return await this.dogService.create(dto, file);
+  async create(@Body() dto: CreateDogDto) {
+    return await this.dogService.create(dto);
   }
 
   @Get(':id')
@@ -49,15 +41,8 @@ export class DogController {
 
   @Patch(':id')
   @UseGuards(AdminGuard)
-  @UseInterceptors(
-    FileInterceptor('image', { storage: multer.memoryStorage() }),
-  )
-  async update(
-    @Param('id') id: string,
-    @UploadedFile() file,
-    @Body() dto: UpdateDogDto,
-  ) {
-    return await this.dogService.update(id, dto, file);
+  async update(@Param('id') id: string, @Body() dto: UpdateDogDto) {
+    return await this.dogService.update(id, dto);
   }
 
   @Delete(':id')

@@ -9,26 +9,44 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: false, transform: true }),
+  );
+
+  const origins = [
+    'http://localhost:3000',
+    'http://localhost:3002',
+    'http://95.179.189.214',
+    'http://95.179.189.214:3002',
+    'https://nevlemar.com',
+    'http://nevlemar.com',
+  ];
+
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: (origin, cb) => {
+      if (!origin || origins.includes(origin)) cb(null, true);
+      else cb(null, true); // permissive in dev
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
   app.use(cookieParser());
-  app.use(session({
-    secret: process.env.SECRET, // Use a strong secret
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: false, // Set to true if using https
-    },
-  }));
+  app.use(
+    session({
+      secret: process.env.SECRET || 'nevlemar-dev-secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: 7 * 24 * 3600 * 1000,
+      },
+    }),
+  );
 
-  await app.listen(3001);
-
+  const port = Number(process.env.PORT || 3001);
+  await app.listen(port);
+  console.log(`[nevlemar backend] listening on :${port}`);
 }
 bootstrap();
-

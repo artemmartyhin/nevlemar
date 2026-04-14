@@ -1,6 +1,23 @@
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export class UpdatePuppyDto {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsOptional()
+  born?: Date;
+
+  @IsString()
+  @IsOptional()
+  gender?: string;
+
+  @IsString()
+  @IsOptional()
+  imageUrl?: string;
+}
+
 export class UpdatePuppiesDto {
   @IsArray()
   @ValidateNested({ each: true })
@@ -22,17 +39,16 @@ export class UpdatePuppiesDto {
   @IsString()
   @IsOptional()
   description?: string;
-}
-
-export class UpdatePuppyDto {
-  @IsString()
-  @IsOptional()
-  name?: string;
-
-  @IsOptional()
-  born?: Date;
 
   @IsString()
   @IsOptional()
-  gender?: string;
+  imageUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  metaTitle?: string;
+
+  @IsString()
+  @IsOptional()
+  metaDescription?: string;
 }

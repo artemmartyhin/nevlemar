@@ -3,20 +3,16 @@ import {
   Post,
   UseGuards,
   Body,
-  UseInterceptors,
-  UploadedFiles,
   Get,
   Param,
   Patch,
   Delete,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
 import { PuppiesService } from './puppies.service';
 import { FindPuppiesDto } from './dto/find-puppies.dto';
 import { CreatePuppiesDto } from './dto/create-puppies.dto';
 import { UpdatePuppiesDto } from './dto/update-puppies.dto';
 import { AdminGuard } from 'src/auth/auth.admin';
-import * as multer from 'multer';
 
 @Controller('puppies')
 export class PuppiesController {
@@ -24,9 +20,8 @@ export class PuppiesController {
 
   @Post()
   @UseGuards(AdminGuard)
-  @UseInterceptors(FilesInterceptor('files', 20, { storage: multer.memoryStorage() }))
-  async create(@UploadedFiles() files, @Body() dto: CreatePuppiesDto) {
-    return await this.puppiesService.create(dto, files);
+  async create(@Body() dto: CreatePuppiesDto) {
+    return await this.puppiesService.create(dto);
   }
 
   @Get(':id')
@@ -46,9 +41,8 @@ export class PuppiesController {
 
   @Patch(':id')
   @UseGuards(AdminGuard)
-  @UseInterceptors(FilesInterceptor('files', 20, { storage: multer.memoryStorage() }))
-  async update(@Param('id') id: string, @UploadedFiles() files, @Body() dto: UpdatePuppiesDto) {
-    return await this.puppiesService.update(id, dto, files);
+  async update(@Param('id') id: string, @Body() dto: UpdatePuppiesDto) {
+    return await this.puppiesService.update(id, dto);
   }
 
   @Delete(':id')

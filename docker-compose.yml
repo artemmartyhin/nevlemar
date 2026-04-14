@@ -2,46 +2,16 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo:7.0
+    image: mongo:6.0
+    container_name: nevlemar_mongo
+    restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME:-nevlemar}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:-nevlemar2026}
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db
-    networks:
-      - web
-
-  backend:
-    build: ./packages/backend
-    environment:
-      DB_HOST: mongodb
-      DB_PORT: 27017
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-    depends_on:
-      - mongodb
-    ports:
-      - "3001:3001"
-    volumes:
-      - image-data:/data/uploads
-    networks:
-      - web
-
-  frontend:
-    build: ./packages/frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    networks:
-      - web
+      - nevlemar_mongo_data:/data/db
 
 volumes:
-  mongo-data:
-  image-data:
-  certs:
-
-networks:
-  web:
+  nevlemar_mongo_data:

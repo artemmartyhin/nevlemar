@@ -1,2 +1,26 @@
 node_modules/
 .env
+.env.local
+
+# Build outputs
+packages/backend/dist/
+packages/frontend-next/.next/
+packages/frontend-next/out/
+
+# Uploads (user data — should not be in git)
+uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Yarn
+yarn.lock

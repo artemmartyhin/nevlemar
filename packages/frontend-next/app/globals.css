@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Geist — trendy minimalist variable sans, Vercel-grade */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --nv-dark: #00172d;
+  --nv-cream: #f7dba7;
+  --nv-text: #52606d;
+  --font-sans: 'Geist', Inter, system-ui, -apple-system, sans-serif;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  html, body {
+    font-family: var(--font-sans);
+    color: var(--nv-dark);
+    background: #ffffff;
+    letter-spacing: -0.011em;
+    line-height: 1.55;
+  }
+
+  /* Display headings — Geist with progressively tighter tracking the bigger they get */
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+  }
+
+  h1 { letter-spacing: -0.055em; }
+  h2 { letter-spacing: -0.04em; }
+  h3 { letter-spacing: -0.03em; }
+
+  p { line-height: 1.65; }
+
+  button, input, textarea, select {
+    font-family: var(--font-sans);
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Fallback for framer-motion SSR-blank issue */
+@keyframes fadeInFallback {
+  to { opacity: 1 !important; transform: none !important; }
+}
+[style*="opacity:0"],
+[style*="opacity: 0"] {
+  animation: fadeInFallback 0.5s 2s forwards;
+}
+
+.quill-dark .ql-toolbar { background: #00172d; color: #f7dba7; border-color: #f7dba7; }
+.quill-dark .ql-container { background: #001a33; color: #fff; border-color: #f7dba7; min-height: 300px; font-family: var(--font-sans); }
+.quill-dark .ql-editor { min-height: 300px; }
+
+/* Prose typography for blog post body */
+.prose-nv {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.75;
+  color: #1f2933;
+  letter-spacing: -0.01em;
+}
+.prose-nv a { color: var(--nv-dark); text-decoration: underline; text-underline-offset: 3px; }
+.prose-nv h1,
+.prose-nv h2,
+.prose-nv h3 {
+  font-family: var(--font-sans);
+  color: var(--nv-dark);
+  letter-spacing: -0.038em;
+  line-height: 1.12;
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+}
+.prose-nv h2 { font-size: 1.8em; font-weight: 700; }
+.prose-nv h3 { font-size: 1.35em; font-weight: 600; }
+.prose-nv p  { margin: 0.85em 0; }
+.prose-nv ul, .prose-nv ol { margin: 1em 0; padding-left: 1.3em; }
+.prose-nv li { margin: 0.35em 0; }
+.prose-nv img { border-radius: 12px; margin: 1.4em 0; }
+.prose-nv blockquote {
+  border-left: 3px solid var(--nv-cream);
+  padding-left: 1.2em;
+  margin: 1.5em 0;
+  font-weight: 500;
+  font-size: 1.15em;
+  color: #2d3748;
+  letter-spacing: -0.015em;
+}
+
+::selection {
+  background: var(--nv-cream);
+  color: var(--nv-dark);
+}

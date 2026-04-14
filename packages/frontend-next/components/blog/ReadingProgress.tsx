@@ -1,0 +1,32 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+export default function ReadingProgress() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const update = () => {
+      const el = document.documentElement;
+      const total = el.scrollHeight - el.clientHeight;
+      const p = total > 0 ? (el.scrollTop / total) * 100 : 0;
+      setProgress(p);
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  return (
+    <div className="fixed top-0 left-0 right-0 h-1 bg-nv-cream/40 z-[60]">
+      <div
+        className="h-full bg-gradient-to-r from-nv-dark via-nv-yellow to-nv-cream transition-[width] duration-150"
+        style={{ width: `${progress}%` }}
+      />
+    </div>
+  );
+}

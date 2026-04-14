@@ -5,9 +5,6 @@ import { Dog } from './dog.schema';
 import { CreateDogDto } from './dto/create-dog.dto';
 import { UpdateDogDto } from './dto/update-dog.dto';
 import { FindDogDto } from './dto/find-dog.dto';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as crypto from 'crypto';
 
 @Injectable()
 export class DogService {
@@ -23,89 +20,41 @@ export class DogService {
 
   async findOne(id: string): Promise<Dog> {
     const dog = await this.dog.findById(id).exec();
-    if (!dog) {
-      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
-    }
+    if (!dog) throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
     return dog;
   }
 
-  async create(dto: CreateDogDto, file: Express.Multer.File): Promise<Dog> {
-    const newDog = new this.dog(dto);
-
-    if (file) {
-      const uploadsDir = '/data/uploads';
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-      }
-
-      const hash = crypto.createHash('sha256');
-      hash.update(`${Date.now()}-${Math.random()}`);
-      const hashedFilename = hash.digest('hex').substring(0, 16);
-      const fileExtension = path.extname(file.originalname);
-      const uniqueFilename = `${hashedFilename}${fileExtension}`;
-
-      const filePath = path.join(uploadsDir, uniqueFilename);
-      fs.writeFileSync(filePath, file.buffer);
-
-      newDog.images[0] = uniqueFilename;
-    }
-
+  async create(dto: CreateDogDto): Promise<Dog> {
+    const { imageUrl, ...rest } = dto as any;
+    const newDog = new this.dog(rest);
+    if (!newDog.images) newDog.images = [];
+    if (imageUrl) newDog.images[0] = imageUrl;
     return await newDog.save();
   }
 
-  async update(
-    id: string,
-    dto: UpdateDogDto,
-    file?: Express.Multer.File,
-  ): Promise<Dog> {
-    const updatedDog = await this.dog.findById(id).exec();
+  async update(id: string, dto: UpdateDogDto): Promise<Dog> {
+    const dog = await this.dog.findById(id).exec();
+    if (!dog) throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
 
-    if (!updatedDog) {
-      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (file) {
-      const uploadsDir = '/data/uploads';
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-      }
-
-      const hash = crypto.createHash('sha256');
-      hash.update(`${Date.now()}-${Math.random()}`);
-      const hashedFilename = hash.digest('hex').substring(0, 16);
-      const fileExtension = path.extname(file.originalname);
-      const uniqueFilename = `${hashedFilename}${fileExtension}`;
-
-      const filePath = path.join(uploadsDir, uniqueFilename);
-      fs.writeFileSync(filePath, file.buffer);
-
-      if (updatedDog.images[0]) {
-        fs.unlinkSync(path.join(uploadsDir, updatedDog.images[0]));
-      }
-
-      updatedDog.images[0] = uniqueFilename;
-    }
-
-    Object.keys(dto).forEach((key) => {
-      updatedDog[key] = dto[key];
+    const { imageUrl, ...rest } = dto as any;
+    Object.keys(rest).forEach((k) => {
+      if (rest[k] !== undefined) (dog as any)[k] = rest[k];
     });
-
-    await updatedDog.save();
-
-    return updatedDog;
+    if (imageUrl !== undefined) {
+      if (!dog.images) dog.images = [];
+      dog.images[0] = imageUrl;
+      dog.markModified('images');
+    }
+    return await dog.save();
   }
 
   async delete(id: string): Promise<void> {
     const result = await this.dog.deleteOne({ _id: id }).exec();
-    if (result.deletedCount === 0) {
-      throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
-    }
+    if (result.deletedCount === 0) throw new HttpException('Dog not found', HttpStatus.NOT_FOUND);
   }
 
   async deleteSeveral(ids: string[]): Promise<void> {
     const result = await this.dog.deleteMany({ _id: { $in: ids } }).exec();
-    if (result.deletedCount === 0) {
-      throw new HttpException('Dogs not found', HttpStatus.NOT_FOUND);
-    }
+    if (result.deletedCount === 0) throw new HttpException('Dogs not found', HttpStatus.NOT_FOUND);
   }
 }

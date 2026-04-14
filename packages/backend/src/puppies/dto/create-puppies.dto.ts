@@ -1,7 +1,22 @@
-import { IsNotEmpty, IsString, IsDate, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsArray, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ValidateNested } from 'class-validator';
-import { IsOptional } from 'class-validator';
+
+export class CreatePuppyDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsOptional()
+  born: Date;
+
+  @IsString()
+  @IsOptional()
+  gender?: string;
+
+  @IsString()
+  @IsOptional()
+  imageUrl?: string;
+}
 
 export class CreatePuppiesDto {
   @IsArray()
@@ -24,17 +39,16 @@ export class CreatePuppiesDto {
   @IsString()
   @IsOptional()
   description?: string;
-}
-
-export class CreatePuppyDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsOptional()
-  born: Date;
 
   @IsString()
   @IsOptional()
-  gender?: string;
+  imageUrl?: string;
+
+  @IsString()
+  @IsOptional()
+  metaTitle?: string;
+
+  @IsString()
+  @IsOptional()
+  metaDescription?: string;
 }
