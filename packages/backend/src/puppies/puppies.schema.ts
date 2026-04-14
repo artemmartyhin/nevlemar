@@ -22,9 +22,11 @@ export class Puppy {
   gender: string;
 }
 
+export const PuppySchema = SchemaFactory.createForClass(Puppy);
+
 @Schema({ timestamps: true })
 export class Puppies extends mongoose.Document {
-  @Prop({ type: [{ type: Puppy }] })
+  @Prop({ type: [PuppySchema], default: [] })
   puppies: Puppy[];
 
   @Prop()
@@ -56,5 +58,4 @@ export class Puppies extends mongoose.Document {
   metaDescription: string;
 }
 
-export const PuppySchema = SchemaFactory.createForClass(Puppy);
 export const PuppiesSchema = SchemaFactory.createForClass(Puppies);

@@ -1,7 +1,7 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/[locale]/page": "app/[locale]/page.js",
-  "/[locale]/admin/page": "app/[locale]/admin/page.js",
-  "/[locale]/poms/page": "app/[locale]/poms/page.js",
+  "/[locale]/blog/page": "app/[locale]/blog/page.js",
   "/[locale]/blog/[slug]/page": "app/[locale]/blog/[slug]/page.js",
-  "/[locale]/aboutus/page": "app/[locale]/aboutus/page.js"
+  "/[locale]/admin/page": "app/[locale]/admin/page.js"
 }
