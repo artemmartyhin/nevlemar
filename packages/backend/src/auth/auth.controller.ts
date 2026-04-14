@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards, Req, Res, Redirect } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:3002';
+const FRONTEND = process.env.FRONTEND_URL || 'https://nevlemar.dog';
 
 @Controller('auth')
 export class AuthController {
@@ -22,20 +22,6 @@ export class AuthController {
   me(@Req() req) {
     const user = req.session?.user || null;
     return { user, isAdmin: user?.role === 'admin' };
-  }
-
-  // TEMPORARY: mock login without Google — logs in as admin Artem
-  // Remove or gate behind NODE_ENV check before exposing publicly
-  @Get('dev-login')
-  devLogin(@Req() req, @Res() res) {
-    req.session.user = {
-      email: 'artemmartyhin@gmail.com',
-      firstName: 'Artem',
-      lastName: 'Martiukhin',
-      picture: 'https://ui-avatars.com/api/?name=Artem+M&background=00172d&color=f7dba7',
-      role: 'admin',
-    };
-    return res.json({ ok: true, user: req.session.user });
   }
 
   @Get('logout')

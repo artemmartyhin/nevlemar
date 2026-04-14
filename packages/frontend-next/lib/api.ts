@@ -55,14 +55,22 @@ export type BlogPost = {
   _id: string;
   slug: string;
   title: string;
-  category: string;
+  coverImage?: string;
   excerpt?: string;
   content: string;
-  image?: string;
+  category: string;
+  tags?: string[];
   author?: string;
-  createdAt: string;
+  authorAvatar?: string;
+  featured?: boolean;
+  published?: boolean;
+  views?: number;
+  likes?: number;
+  readingTime?: number;
   metaTitle?: string;
   metaDescription?: string;
+  createdAt: string;
+  updatedAt?: string;
 };
 
 export type BlogCategory = { _id?: string; slug: string; name: string };
@@ -74,7 +82,10 @@ export type BlogComment = {
   authorEmail?: string;
   authorAvatar?: string;
   content: string;
-  approved: boolean;
+  approved?: boolean;
   parentId?: string | null;
+  likes?: number;
   createdAt: string;
+  updatedAt?: string;
 };
+

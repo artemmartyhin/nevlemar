@@ -18,6 +18,8 @@ async function bootstrap() {
     'http://localhost:3002',
     'http://95.179.189.214',
     'http://95.179.189.214:3002',
+    'https://nevlemar.dog',
+    'https://www.nevlemar.dog',
     'https://nevlemar.com',
     'http://nevlemar.com',
   ];
@@ -32,14 +34,17 @@ async function bootstrap() {
   });
 
   app.use(cookieParser());
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
   app.use(
     session({
       secret: process.env.SECRET || 'nevlemar-dev-secret',
       resave: false,
       saveUninitialized: false,
+      proxy: true,
       cookie: {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production' || !!process.env.COOKIE_SECURE,
+        sameSite: 'lax',
         maxAge: 7 * 24 * 3600 * 1000,
       },
     }),

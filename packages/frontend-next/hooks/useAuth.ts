@@ -30,16 +30,10 @@ export default function useAuth() {
 
   useEffect(() => { refresh(); }, [refresh]);
 
-  const login = useCallback(async () => {
-    // MOCK: dev-login skips Google OAuth entirely
-    try {
-      const r = await axios.get(`${API}/auth/dev-login`, { withCredentials: true });
-      if (r.data?.user) {
-        setUser(r.data.user);
-        return;
-      }
-    } catch {}
-    // Fallback: real Google flow
+  const login = useCallback(() => {
+    // Real Google OAuth — redirects user to Google consent screen, then
+    // Google calls back /api/auth/google/callback which sets session and
+    // redirects back to the site root.
     window.location.href = `${API}/auth/google`;
   }, []);
 

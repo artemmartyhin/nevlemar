@@ -6,10 +6,10 @@ services:
     container_name: nevlemar_mongo
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME:-nevlemar}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:-nevlemar2026}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - nevlemar_mongo_data:/data/db
 
